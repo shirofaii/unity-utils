@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 
+namespace SharedUtils {
 [Il2CppSetOption(Option.NullChecks, false)]
 [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 public class MemoryArena<T> where T : struct {
@@ -81,4 +82,5 @@ public class MemoryArena<T> where T : struct {
         capacity *= 2;
         Array.Resize(ref array, capacity);
     }
+}
 }

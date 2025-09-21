@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 // ReSharper disable InconsistentNaming
 
+namespace SharedUtils {
 public static class CollectionExtensions {
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -638,4 +639,5 @@ public static class CollectionExtensions {
         list.Add(value);
         return value;
     }
+}
 }

@@ -1,10 +1,11 @@
 {
-    "name": "unity-utils.Runtime",
-    "references": [],
-    "includePlatforms": [],
-    "excludePlatforms": [
-        "Editor"
+    "name": "Utils",
+    "rootNamespace": "SharedUtils",
+    "references": [
+        "GUID:3377deebfb0acde45876d12c6e3d27cc"
     ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],

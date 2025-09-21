@@ -7,7 +7,7 @@ using Unity.IL2CPP.CompilerServices;
 
 // ReSharper disable InconsistentNaming
 
-namespace Dungeon.Utils {
+namespace SharedUtils {
 public static class Rand {
     private static readonly Random rand = new();
 

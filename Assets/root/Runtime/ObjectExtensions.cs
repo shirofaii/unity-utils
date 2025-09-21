@@ -1,6 +1,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
+namespace SharedUtils {
 public static class ObjectExtension {
     public static byte[] SerializeToByteArray(this object obj) {
         if (obj == null) {
@@ -26,4 +27,5 @@ public static class ObjectExtension {
     }
 
     public static T Clone<T>(this T original) where T : class => original.SerializeToByteArray().Deserialize<T>();
+}
 }
