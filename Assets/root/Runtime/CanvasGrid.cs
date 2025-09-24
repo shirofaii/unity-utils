@@ -6,7 +6,7 @@ using UnityEngine;
 public class CanvasGrid {
     private Vector2Int margins = new Vector2Int(18, 20);
     private Vector2Int cellSize = new Vector2Int(39, 37);
-    private readonly Vector2Int gridSize = new Vector2Int(42,24);
+    public readonly Vector2Int gridSize = new Vector2Int(42,24);
     private float scaleFactor = 1f;
     private readonly int space = 6;
 
@@ -14,7 +14,7 @@ public class CanvasGrid {
     private readonly Rect[] cellsWorldsSpace;
     private Entity[] entities; 
     private Vector2Int screenSize;
-
+    
     public CanvasGrid() {
         cells = new Rect[gridSize.x * gridSize.y];
         cellsWorldsSpace = new Rect[gridSize.x * gridSize.y];
@@ -141,27 +141,5 @@ public class CanvasGrid {
             }
         }
     }
-
-    
-    
-    // public override void DrawShapes(Camera cam){
-    //     using(Draw.Command(cam)) {
-    //         var color = Color.white;
-    //         color.a = 0.2f;
-    //         Draw.Color = color;
-    //         
-    //         Draw.LineGeometry = LineGeometry.Flat2D;
-    //         Draw.ThicknessSpace = ThicknessSpace.Pixels;
-    //         Draw.Thickness = 1;
-    //
-    //         for(var x = 0; x < gridSize.x; x++) {
-    //             for(var y = 0; y < gridSize.y; y++) {
-    //                 var rect = GetCellWorldSpace(x, y);
-    //                 
-    //                 Draw.RectangleBorder(rect, 1);
-    //             }
-    //         }
-    //     }
-    // }
 }
 
