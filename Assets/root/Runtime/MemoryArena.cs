@@ -1,7 +1,9 @@
+using Scellecs.Morpeh.Collections;
 using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
+using static Globals;
 
 namespace SharedUtils {
 [Il2CppSetOption(Option.NullChecks, false)]
@@ -12,7 +14,7 @@ public class MemoryArena<T> where T : struct {
     private T[] array;
 
     private bool isAddMode;
-    private int fromIdx;
+    private int startMarker;
     
     public MemoryArena(int capacity) {
         Debug.Assert(capacity > 0);
@@ -25,17 +27,15 @@ public class MemoryArena<T> where T : struct {
         size = 0;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public MemoryArena<T> Start() {
+    [MethodImpl(inline)] public MemoryArena<T> Start() {
         Debug.Assert(!isAddMode);
         
         isAddMode = true;
-        fromIdx = size;
+        startMarker = size;
         return this;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public MemoryArena<T> Add(T x) {
+    [MethodImpl(inline)] public MemoryArena<T> Add(T x) {
         Debug.Assert(isAddMode);
         
         CheckForAvailableSpace(1);
@@ -45,42 +45,50 @@ public class MemoryArena<T> where T : struct {
         return this;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public MemoryArena<T> Add(T[] x) {
+    [MethodImpl(inline)] public MemoryArena<T> Add(T[] x) {
         Debug.Assert(isAddMode);
 
         var len = x.Length;
         CheckForAvailableSpace(len);
-        Array.Copy(x, 0, array, fromIdx, len);
+        Array.Copy(x, 0, array, startMarker, len);
         size += len;
         
         return this;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Memory<T> Finish() {
+    [MethodImpl(inline)] public Memory<T> Finish() {
         Debug.Assert(isAddMode);
         
         isAddMode = false;
-        return new Memory<T>(array, fromIdx, size - fromIdx);
+        return new Memory<T>(array, startMarker, size - startMarker);
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Memory<T> Alloc(int amount) {
+    [MethodImpl(inline)] public Memory<T> Alloc(int amount) {
         Debug.Assert(!isAddMode);
         
         CheckForAvailableSpace(amount);
-        fromIdx = size;
         size += amount;
-        return new Memory<T>(array, fromIdx, amount);
+        var mem = new Memory<T>(array, startMarker, amount);
+        startMarker += amount;
+        return mem;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void CheckForAvailableSpace(int i) {
+    [MethodImpl(inline)] private void CheckForAvailableSpace(int i) {
         if(size + i <= capacity) return;
         
+        Debug.LogWarning($"Adjust buffer size, {capacity} is too small");
         capacity *= 2;
-        Array.Resize(ref array, capacity);
+        
+        var newArray = new T[capacity];
+        if(isAddMode) {
+            size = array.Length - startMarker;
+            Array.Copy(array, startMarker, newArray, 0, array.Length - startMarker);
+        } else {
+            size = 0;
+        }
+        
+        startMarker = 0;
+        array = newArray;
     }
 }
 }

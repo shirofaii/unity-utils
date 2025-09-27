@@ -1,212 +1,224 @@
-﻿using Scellecs.Morpeh.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
+using RandN;
+using RandN.Distributions;
+using static Globals;
 
 // ReSharper disable InconsistentNaming
 
 namespace SharedUtils {
 public static class Rand {
-    private static readonly Random rand = new();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Il2CppSetOption(Option.NullChecks, false)]
-    public static int Index<T>(List<T> list) => rand.Next(list.Count);
+    private static readonly StandardRng rand = StandardRng.Create();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Il2CppSetOption(Option.NullChecks, false)]
-    public static int Index<T>(FastList<T> list) => rand.Next(list.length);
+    [MethodImpl(inline)] public static int Index<T>(List<T> list) => Uniform.NewInclusive(0, list.Count - 1).Sample(rand);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Il2CppSetOption(Option.NullChecks, false)]
-    public static int Index<T>(T[] list) => rand.Next(list.Length);
+    [MethodImpl(inline)] public static int Index<T>(RawList<T> list) => Uniform.NewInclusive(0, list.size - 1).Sample(rand);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Il2CppSetOption(Option.NullChecks, false)]
-    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static T Value<T>(List<T> list) => list[rand.Next(list.Count)];
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Il2CppSetOption(Option.NullChecks, false)]
-    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static T Value<T>(FastList<T> list) => list[rand.Next(list.length)];
+    [MethodImpl(inline)] public static int Index<T>(T[] list) => Uniform.NewInclusive(0, list.Length - 1).Sample(rand);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static T Value<T>(T[] list) => list[rand.Next(list.Length)];
+    [MethodImpl(inline)] public static T AtRandom<T>(this List<T> list, T ifEmpty = default) {
+        if(list == null || list.Count == 0) return ifEmpty;
+        return list[Index(list)];
+    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static T AtRandom<T>(this List<T> list) => list[rand.Next(list.Count)];
+    [MethodImpl(inline)] public static T AtRandom<T>(this RawList<T> list, T ifEmpty = default) {
+        if(list == null || list.size == 0) return ifEmpty;
+        return list[Index(list)];
+    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static T AtRandom<T>(this FastList<T> list) => list[rand.Next(list.length)];
+    [MethodImpl(inline)] public static T AtRandom<T>(this T[] list, T ifEmpty = default) {
+        if(list == null || list.Length == 0) return ifEmpty;
+        return list[Index(list)];
+    }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Il2CppSetOption(Option.NullChecks, false)]
-    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static T AtRandom<T>(this T[] list) => list[rand.Next(list.Length)];
-
-    public static Dice d2 => new(2);
-    public static Dice d3 => new(3);
-    public static Dice d4 => new(4);
-    public static Dice d6 => new(6);
-    public static Dice d8 => new(8);
-    public static Dice d10 => new(10);
-    public static Dice d12 => new(12);
-    public static Dice d20 => new(20);
-    public static Dice d100 => new(100);
-
-    public static float Float(float to) => (float)(rand.NextDouble() * to);
+    [MethodImpl(inline)] public static float Float(float to) => Uniform.NewInclusive(0f, to).Sample(rand);
 
     public struct Dice {
-        public enum Modifier { None, Best, Worst }
+        public enum Keep { Sum, Best, Worst }
 
-        private readonly int dice;
-        private int times;
-        private int add;
-        private Modifier modifier;
+        private readonly int sides;
+        private int numberOfDices;
+        private int additive;
+        private Keep keep;
 
-        public Dice(int dice, int times = 1, int add = 0, Modifier modifier = Modifier.None) {
-            this.dice = dice;
-            this.times = times;
-            this.add = add;
-            this.modifier = modifier;
+        public Dice(int sides = 6, int numberOfDices = 1, int additive = 0, Keep keep = Keep.Sum) {
+            this.sides = sides;
+            this.numberOfDices = numberOfDices;
+            this.additive = additive;
+            this.keep = keep;
         }
 
         public Dice best {
-            get {
-                modifier = Modifier.Best;
+            [MethodImpl(inline)] get {
+                keep = Keep.Best;
                 return this;
             }
         }
 
         public Dice worst {
-            get {
-                modifier = Modifier.Worst;
+            [MethodImpl(inline)] get {
+                keep = Keep.Worst;
                 return this;
             }
         }
 
-        public static implicit operator int(Dice d) => d.Roll();
+        [MethodImpl(inline)] public static implicit operator int(Dice d) => d.Roll();
 
-        public static Dice operator *(int times, Dice dice) {
-            dice.times *= times;
+        [MethodImpl(inline)] public static Dice operator *(int times, Dice dice) {
+            dice.numberOfDices *= times;
             return dice;
         }
 
-        public static Dice operator +(Dice dice, int add) {
-            dice.add += add;
+        [MethodImpl(inline)] public static Dice operator +(Dice dice, int add) {
+            dice.additive += add;
             return dice;
         }
 
-        public int Roll() {
-            switch (modifier) {
-                case Modifier.Worst:
-                    var all = new List<int>(times);
-                    for(var i = 1; i < times; i++) {
-                        all.Add(rand.Next(dice) + 1 + add);
+        [MethodImpl(inline)] private int OneDiceRoll() => Uniform.NewInclusive(1, sides).Sample(rand);  
+        
+        [MethodImpl(inline)] public int Roll() {
+            switch (keep) {
+                case Keep.Worst: {
+                    var min = OneDiceRoll();
+                    for (var i = 1; i < numberOfDices; i++) {
+                        var roll = OneDiceRoll();
+                        if (roll < min) {
+                            min = roll;
+                        }
                     }
 
-                    return all.Min();
-                case Modifier.Best:
-                    all = new List<int>(times);
-                    for(var i = 1; i < times; i++) {
-                        all.Add(rand.Next(dice) + 1 + add);
+                    return min + additive;
+                }
+                case Keep.Best: {
+                    var max = OneDiceRoll();
+                    for (var i = 1; i < numberOfDices; i++) {
+                        var roll = OneDiceRoll();
+                        if (roll > max) {
+                            max = roll;
+                        }
                     }
 
-                    return all.Max();
-                case Modifier.None: return (rand.Next(dice) + 1) * times + add;
-                default:            throw new Exception();
+                    return max + additive;
+                }
+                case Keep.Sum: {
+                    var sum = 0;
+                    for(var i = 0; i < numberOfDices; i++) {
+                        sum += OneDiceRoll();
+                    }
+                    return sum + additive;
+                }
+                default: throw new Exception();
             }
         }
 
-        public void Times(Action<int> action) {
-            var roll = Roll();
+        [MethodImpl(inline)] public void Times(Action<int> action) {
+            var roll = Roll() - additive;
             for(var i = 0; i < roll; i++) {
                 action.Invoke(i);
             }
         }
 
-        public void Times(Action action) {
-            var roll = Roll();
+        [MethodImpl(inline)] public void Times(Action action) {
+            var roll = Roll() - additive;
             for(var i = 0; i < roll; i++) {
                 action.Invoke();
             }
         }
     }
+    
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [MethodImpl(inline)] public static RandomStartEnumeratorForListOf<T> FromRandomStart<T>(this List<T> list) {
+        var idx = Index(list);
+        return new RandomStartEnumeratorForListOf<T> {
+            data = list,
+            index = idx,
+            stopIndex = idx, 
+        };
+    }
+    
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+    public struct RandomStartEnumeratorForListOf<T> {
+        public List<T> data;
+        public int index;
+        public int stopIndex;
+        
+        [MethodImpl(inline)] public RandomStartEnumeratorForListOf<T> GetEnumerator() => this;
+        [MethodImpl(inline)] public bool MoveNext() {
+            index++;
+            if(index >= data.Count) index = 0;
+            if(index == stopIndex) return false;
+            
+            return true;
+        }
 
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Il2CppSetOption(Option.NullChecks, false)]
-    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static IEnumerable<T> IterateFromRandomStart<T>(this List<T> list) {
-        var offset = Index(list);
-        for(var i = 0; i <= list.Count; i++) {
-            yield return list.AtWrap(i + offset);
+        public T Current {
+            [MethodImpl(inline)] get => data[index];
         }
     }
+    
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [MethodImpl(inline)] public static RandomStartEnumeratorForRawListOf<T> FromRandomStart<T>(this RawList<T> list) {
+        var idx = Index(list);
+        return new RandomStartEnumeratorForRawListOf<T> {
+            data = list,
+            index = idx,
+            stopIndex = idx, 
+        };
+    }
+    
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+    public struct RandomStartEnumeratorForRawListOf<T> {
+        public RawList<T> data;
+        public int index;
+        public int stopIndex;
+        
+        [MethodImpl(inline)] public RandomStartEnumeratorForRawListOf<T> GetEnumerator() => this;
+        [MethodImpl(inline)] public bool MoveNext() {
+            index++;
+            if(index >= data.size) index = 0;
+            if(index == stopIndex) return false;
+            
+            return true;
+        }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Il2CppSetOption(Option.NullChecks, false)]
-    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static IEnumerable<T> IterateFromRandomStart<T>(this FastList<T> list) {
-        var offset = Index(list);
-        for(var i = 0; i <= list.length; i++) {
-            yield return list.AtWrap(i + offset);
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Il2CppSetOption(Option.NullChecks, false)]
-    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static IEnumerable<T> IterateFromRandomStart<T>(this T[] array) {
-        var offset = Index(array);
-        for(var i = 0; i <= array.Length; i++) {
-            yield return array.AtWrap(i + offset);
+        public ref T Current {
+            [MethodImpl(inline)] get => ref data[index];
         }
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static void Shuffle<T>(this T[] array) {
-        var n = array.Length;
-        while (n > 1) {
-            n--;
-            var k = rand.Next(n + 1);
-            (array[n], array[k]) = (array[k], array[n]);
-        }
+    [MethodImpl(inline)] public static void Shuffle<T>(this T[] array) {
+        rand.ShuffleInPlace(array.AsSpan());
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static void Shuffle<T>(this List<T> list) {
-        var n = list.Count;
-        while (n > 1) {
-            n--;
-            var k = rand.Next(n + 1);
-            (list[n], list[k]) = (list[k], list[n]);
-        }
+    [MethodImpl(inline)] public static void Shuffle<T>(this List<T> list) {
+        rand.ShuffleInPlace(list);
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-    public static void Shuffle<T>(this FastList<T> list) {
-        var n = list.length;
-        while (n > 1) {
-            n--;
-            var k = rand.Next(n + 1);
-            (list[n], list[k]) = (list[k], list[n]);
-        }
+    [MethodImpl(inline)] public static void Shuffle<T>(this RawList<T> list) {
+        rand.ShuffleInPlace(list.AsSpan());
     }
 }
 }
