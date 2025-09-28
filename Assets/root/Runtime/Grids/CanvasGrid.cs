@@ -22,11 +22,11 @@ public class CanvasGrid {
         Recalculate();
     }
 
-    [MethodImpl(inline)] public Rect GetCell(int x, int y) {
+    [MethodImpl(inline)] public Rect GetCellScreenSpace(int x, int y) {
         return cells[x * gridSize.y + y];
     }
 
-    [MethodImpl(inline)] public Rect GetCell(Vector2Int position) {
+    [MethodImpl(inline)] public Rect GetCellScreenSpace(Vector2Int position) {
         return cells[position.x * gridSize.y + position.y];
     }
 
