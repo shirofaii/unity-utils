@@ -38,15 +38,15 @@ public class CanvasGrid {
         return cellsWorldsSpace[position.x * gridSize.y + position.y];
     }
 
-    [MethodImpl(inline)] public Rect GetRectSize(RectInt rect) {
+    [MethodImpl(inline)] public Rect GetRectSizeScreenSpace(RectInt rect) {
         var min = cells[rect.min.x * gridSize.y + rect.min.y].min;
-        var max = cells[rect.max.x * gridSize.y + rect.max.y].max;
+        var max = cells[(rect.max.x - 1) * gridSize.y + (rect.max.y - 1)].max;
         return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
     }
 
     [MethodImpl(inline)] public Rect GetRectSizeWorldSpace(RectInt rect) {
         var min = cellsWorldsSpace[rect.min.x * gridSize.y + rect.min.y].min;
-        var max = cellsWorldsSpace[rect.max.x * gridSize.y + rect.max.y].max;
+        var max = cellsWorldsSpace[(rect.max.x - 1) * gridSize.y + (rect.max.y - 1)].max;
         return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
     }
 
