@@ -598,5 +598,15 @@ public static class CollectionExtensions {
         list.Add(value);
         return value;
     }
+    
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [MethodImpl(inline)] public static R[] ConvertAll<T, R>(this T[] list) where T : class where R : class {
+        var result = new R[list.Length];
+        for (var i = 0; i < list.Length; i++) {
+            result[i] = list[i] as R;
+        }
+        return result;
+    }
 }
 }

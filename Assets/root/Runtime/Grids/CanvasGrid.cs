@@ -10,7 +10,10 @@ public class CanvasGrid {
     private Vector2Int cellSize = new Vector2Int(39, 37);
     public readonly Vector2Int gridSize = new Vector2Int(42, 24);
     private float scaleFactor = 1f;
-    private readonly int space = 6;
+    public readonly int gap = 6;
+    
+    public Vector2 worldUnitsInCamera;
+    public Vector2 pixelToWorld;
 
     private readonly Rect[] cells;
     private readonly Rect[] cellsWorldsSpace;
@@ -63,13 +66,19 @@ public class CanvasGrid {
     private void Recalculate() {
         var cam = Camera.main!;
 
+        worldUnitsInCamera.y = cam.orthographicSize * 2;
+        worldUnitsInCamera.x = worldUnitsInCamera.y * Screen.width / Screen.height;
+
+        pixelToWorld.x = worldUnitsInCamera.x / Screen.width;
+        pixelToWorld.y = worldUnitsInCamera.y / Screen.height;
+        
         var referenceResolution = new Vector2(1920, 1080);
         scaleFactor = Mathf.Min(screenSize.x / referenceResolution.x, screenSize.y / referenceResolution.y);
         var scaledMargins = new Vector2(margins.x * scaleFactor, margins.y * scaleFactor);
         var scaledCellSize = new Vector2(cellSize.x * scaleFactor, cellSize.y * scaleFactor);
-        var scaledSpace = space * scaleFactor;
+        var scaledGap = gap * scaleFactor;
 
-        var step = scaledCellSize + new Vector2(scaledSpace, scaledSpace);
+        var step = scaledCellSize + new Vector2(scaledGap, scaledGap);
         var full = scaledMargins * 2 + step * gridSize;
         scaledMargins += (screenSize - full) * 0.5f;
 
