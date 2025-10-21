@@ -20,6 +20,10 @@ using static Globals;
         this.size = size;
         data = new T[size.x * size.y];
     }
+    
+    public RectData(T[] src, Vector2Int size) : this(size) {
+        Fill(src);
+    }
 
     public ref T this[int x, int y] {
 #if RECT_DATA_TILED
@@ -32,7 +36,7 @@ using static Globals;
             var inTileX = x % 4;
             var inTileY = y % 4;
 
-            return ref data[((tileY * widthInTiles + tileX) >> 4) + (inTileY >> 2) + inTileX];
+            return ref data[(tileY * widthInTiles + tileX) * 16 + (inTileY * 4) + inTileX];
         }
 #else
         [MethodImpl(inline)] get => ref data[x * size.y + y];
@@ -65,6 +69,14 @@ using static Globals;
         }
     }
 
+    public void Fill(Span<T> array) {
+        for (var i = 0; i < size.x; i++) {
+            for (var j = 0; j < size.y; j++) {
+                data[i + j * size.x] = array[j];
+            }
+        }
+    }
+    
     [MethodImpl(inline)] public bool IsNotEmpty(RectInt rect) {
         foreach (ref readonly var x in DataInRect(rect)) {
             if (EqualityComparer<T>.Default.Equals(x, default)) return true;
