@@ -1,3 +1,5 @@
+#define RECT_DATA_TILED
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,31 +7,54 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using static Globals;
 
+// Tiled by 4x4 tile size for cache friendliness
 [Serializable] public struct RectData<T> {
     public readonly Vector2Int size;
     public readonly T[] data;
 
-    public RectData(T[] data, Vector2Int size) {
-        this.data = data;
-        this.size = size;
-    }
-    
-    public RectData(int w, int h) {
-        size = new Vector2Int(w, h);
-        data = new T[size.x * size.y];
-    }
-    
     public RectData(Vector2Int size) {
+#if RECT_DATA_TILED
+        Debug.Assert(size.x % 4 == 0 && size.y % 4 == 0);
+#endif
+        
         this.size = size;
         data = new T[size.x * size.y];
     }
 
     public ref T this[int x, int y] {
+#if RECT_DATA_TILED
+        [MethodImpl(inline)]
+        get {
+            var widthInTiles = size.x >> 2;
+
+            var tileX = x >> 2;
+            var tileY = y >> 2;
+            var inTileX = x % 4;
+            var inTileY = y % 4;
+
+            return ref data[((tileY * widthInTiles + tileX) >> 4) + (inTileY >> 2) + inTileX];
+        }
+#else
         [MethodImpl(inline)] get => ref data[x * size.y + y];
+#endif
     }
-    
+
     public ref T this[Vector2Int pos] {
+#if RECT_DATA_TILED
+        [MethodImpl(inline)]
+        get {
+            var widthInTiles = size.x >> 2;
+
+            var tileX = pos.x >> 2;
+            var tileY = pos.y >> 2;
+            var inTileX = pos.x % 4;
+            var inTileY = pos.y % 4;
+
+            return ref data[((tileY * widthInTiles + tileX) << 4) + (inTileY >> 2) + inTileX];
+        }
+#else
         [MethodImpl(inline)] get => ref data[pos.x * size.y + pos.y];
+#endif
     }
 
     public T this[RectInt rect] {
