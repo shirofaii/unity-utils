@@ -1,6 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using SharedUtils;
+using Unity.PerformanceTesting;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -20,9 +22,35 @@ public class Test_RawList {
         Assert.AreEqual(list[2], 4);
     }
     
-    [Test] public void Test2() {
+    [Test, Performance] public void RawListPerf() {
+        Measure.Method(() => {
+                var list = new RawList<int>(10000);
+                for(int i=0;i<10000;i++) {
+                    list.Add(i);
+                }
+                for(int i=0;i<10000;i++) {
+                    list[i]++;
+                }
+            })
+            .WarmupCount(5)
+            .IterationsPerMeasurement(10)
+            .MeasurementCount(20)
+            .Run();
     }
     
-    [Test] public void Test3() {
+    [Test, Performance] public void ListPerf() {
+        Measure.Method(() => {
+                var list = new List<int>(10000);
+                for(int i=0;i<10000;i++) {
+                    list.Add(i);
+                }
+                for(int i=0;i<10000;i++) {
+                    list[i]++;
+                }
+            })
+            .WarmupCount(5)
+            .IterationsPerMeasurement(10)
+            .MeasurementCount(20)
+            .Run();
     }
 }

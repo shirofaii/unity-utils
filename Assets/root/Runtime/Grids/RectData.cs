@@ -1,7 +1,4 @@
-#define RECT_DATA_TILED
-
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -13,66 +10,27 @@ using static Globals;
     public readonly T[] data;
 
     public RectData(Vector2Int size) {
-#if RECT_DATA_TILED
-        Debug.Assert(size.x % 4 == 0 && size.y % 4 == 0);
-#endif
-        
         this.size = size;
         data = new T[size.x * size.y];
     }
     
-    public RectData(T[] src, Vector2Int size) : this(size) {
-        Fill(src);
+    public RectData(T[] src, Vector2Int size) {
+        this.size = size;
+        data = src;
     }
 
     public ref T this[int x, int y] {
-#if RECT_DATA_TILED
-        [MethodImpl(inline)]
-        get {
-            var widthInTiles = size.x >> 2;
-
-            var tileX = x >> 2;
-            var tileY = y >> 2;
-            var inTileX = x % 4;
-            var inTileY = y % 4;
-
-            return ref data[(tileY * widthInTiles + tileX) * 16 + (inTileY * 4) + inTileX];
-        }
-#else
         [MethodImpl(inline)] get => ref data[x * size.y + y];
-#endif
     }
 
     public ref T this[Vector2Int pos] {
-#if RECT_DATA_TILED
-        [MethodImpl(inline)]
-        get {
-            var widthInTiles = size.x >> 2;
-
-            var tileX = pos.x >> 2;
-            var tileY = pos.y >> 2;
-            var inTileX = pos.x % 4;
-            var inTileY = pos.y % 4;
-
-            return ref data[((tileY * widthInTiles + tileX) << 4) + (inTileY >> 2) + inTileX];
-        }
-#else
         [MethodImpl(inline)] get => ref data[pos.x * size.y + pos.y];
-#endif
     }
 
     public T this[RectInt rect] {
         [MethodImpl(inline)] set {
             foreach (ref var x in DataInRect(rect)) {
                 x = value;
-            }
-        }
-    }
-
-    public void Fill(Span<T> array) {
-        for (var i = 0; i < size.x; i++) {
-            for (var j = 0; j < size.y; j++) {
-                data[i + j * size.x] = array[j];
             }
         }
     }

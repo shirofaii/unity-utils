@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 
 public class Test_Cache16 {
     [Test] public void Test1() {
-        var cache = new Cache16<int>();
+        var cache = new Cache16Unsafe<int>();
         for (var i = 0; i < 16; i++) {
             cache.AddOnce(i);
         }

@@ -13,7 +13,7 @@ namespace SharedUtils {
 [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 [StructLayout(LayoutKind.Sequential)]
-public struct Cache16<T> where T : unmanaged {
+public struct Cache16Unsafe<T> where T : unmanaged {
     public int size;
     private T e0;
     private T e1;
