@@ -7,23 +7,18 @@ using SharedUtils;
 using UnityEngine;
 using static Globals;
 
-// Tiled by 4x4 tile size for cache friendliness
-[Serializable] public struct EntityRectMap {
-    public readonly RectData<RawList<Entity>> data;
+public readonly struct EntityRectMap {
+    public readonly RectData<EntityCacheSafe> data;
 
     public EntityRectMap(Vector2Int size) {
-        data = new RectData<RawList<Entity>>(size);
-        foreach (ref var rawList in data) {
-            rawList = new RawList<Entity>(8);
-        }
+        data = new RectData<EntityCacheSafe>(size);
     }
     
-    public RawList<Entity> this[int x, int y] {
-        [MethodImpl(inline)] get => data[x, y];
+    public Span<Entity> this[int x, int y] {
+        [MethodImpl(inline)] get => data[x, y].GetSpan();
     }
 
-    public RawList<Entity> this[Vector2Int pos] {
-        [MethodImpl(inline)] get => data[pos];
+    public Span<Entity> this[Vector2Int pos] {
+        [MethodImpl(inline)] get => data[pos.x, pos.y].GetSpan();
     }
 }
-

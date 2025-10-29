@@ -27,8 +27,7 @@ public struct EntityCacheSafe {
     [FieldOffset(48)] private Entity e5;
     [FieldOffset(56)] private Entity e6;
     
-    [MethodImpl(inline)]
-    public Span<Entity> GetSpan() {
+    [MethodImpl(inline)] public Span<Entity> GetSpan() {
         if (useFallback) {
             return fallbackList.data.AsSpan(0, size);
         }
