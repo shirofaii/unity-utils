@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using static Globals;
 
-// Tiled by 4x4 tile size for cache friendliness
 [Serializable] public struct RectData<T> {
     public readonly Vector2Int size;
     public readonly T[] data;

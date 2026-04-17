@@ -608,5 +608,17 @@ public static class CollectionExtensions {
         }
         return result;
     }
+
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [MethodImpl(inline)] public static IEnumerable<T> SeparatedBy<T>(this IEnumerable<T> source, T separator) {
+        var first = true;
+        foreach (T value in source)
+        {
+            if (!first) yield return separator;
+            yield return value;
+            first = false;
+        }
+    }
 }
 }
