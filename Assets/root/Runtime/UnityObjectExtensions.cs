@@ -7,16 +7,22 @@ using static Globals;
 namespace SharedUtils {
 public static class UnityObjectExtension {
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static void SetActive(this Component comp, bool active) {
         if (comp == null) return;
 
         comp.gameObject.SetActive(active);
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static void DestroyAll<T>(this List<T> list) where T : MonoBehaviour {
         if ((list == null) || (list.Count == 0)) return;
 
@@ -29,8 +35,11 @@ public static class UnityObjectExtension {
         list.Clear();
     }
 
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static void DestroyAll(this List<GameObject> list) {
         if ((list == null) || (list.Count == 0)) return;
 
@@ -43,8 +52,11 @@ public static class UnityObjectExtension {
         list.Clear();
     }
 
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static void SetActiveAll<T>(this List<T> list, bool value = true) where T : MonoBehaviour {
         if ((list == null) || (list.Count == 0)) return;
 

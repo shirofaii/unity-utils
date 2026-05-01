@@ -1,15 +1,19 @@
-﻿using Scellecs.Morpeh.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+#if ENABLE_IL2CPP
 using Unity.IL2CPP.CompilerServices;
+#endif
 using static Globals;
 
 namespace SharedUtils {
 public static class CollectionExtensions {
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T First<T>(this T[] array, T ifEmpty = default) {
         if (array == null || array.Length == 0) {
             return ifEmpty;
@@ -18,8 +22,11 @@ public static class CollectionExtensions {
         return array[0]; 
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T First<T>(this List<T> list, T ifEmpty = default) {
         if (list == null || list.Count == 0) {
             return ifEmpty;
@@ -28,8 +35,11 @@ public static class CollectionExtensions {
         return list[0];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T First<T>(this RawList<T> list, T ifEmpty = default) {
         if (list == null || list.size == 0) {
             return ifEmpty;
@@ -38,26 +48,38 @@ public static class CollectionExtensions {
         return list[0];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T Last<T>(this T[] array, T ifEmpty = default) {
         return array.Length == 0 ? ifEmpty : array[^1];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T Last<T>(this List<T> list, T ifEmpty = default) {
         return list.Count == 0 ? ifEmpty : list[^1];
     }
 
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T Last<T>(this RawList<T> list, T ifEmpty = default) {
         return list.size == 0 ? ifEmpty : list[list.size - 1];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T At<T>(this T[] array, int index, T ifNotInRange = default) {
         if (array == null || index >= array.Length || index < 0) {
             return ifNotInRange;
@@ -66,8 +88,11 @@ public static class CollectionExtensions {
         return array[index];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T At<T>(this List<T> list, int index, T ifNotInRange = default) {
         if (list == null || index >= list.Count || index < 0) {
             return ifNotInRange;
@@ -76,8 +101,11 @@ public static class CollectionExtensions {
         return list[index];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T At<T>(this IList<T> list, int index, T ifNotInRange = default) {
         if (list == null || index >= list.Count || index < 0) {
             return ifNotInRange;
@@ -86,8 +114,11 @@ public static class CollectionExtensions {
         return list[index];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T At<T>(this RawList<T> list, int index, T ifNotInRange = default) {
         if (list == null || index >= list.size || index < 0) {
             return ifNotInRange;
@@ -96,8 +127,11 @@ public static class CollectionExtensions {
         return list[index];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static V At<K, V>(this Dictionary<K, V> dict, K key, V ifAbsent = default) {
         if (dict == null || !dict.TryGetValue(key, out var value)) {
             return ifAbsent;
@@ -106,8 +140,11 @@ public static class CollectionExtensions {
         return value;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T AtLast<T>(this T[] array, int index, T ifNotInRange = default) {
         if (array == null || index >= array.Length || index < 0) {
             return ifNotInRange;
@@ -117,8 +154,11 @@ public static class CollectionExtensions {
     }
 
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T AtWrap<T>(this T[] array, int index, T ifEmpty = default) {
         if (array == null || array.Length == 0) {
             return ifEmpty;
@@ -128,8 +168,11 @@ public static class CollectionExtensions {
         return array[idx];
     }
 
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static ref T AtWrapRef<T>(this T[] array, int index) {
         if (array == null || array.Length == 0) {
             throw new IndexOutOfRangeException();
@@ -140,8 +183,11 @@ public static class CollectionExtensions {
         return ref array[idx];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T AtWrap<T>(this List<T> list, int index, T ifEmpty = default) {
         if (list == null || list.Count == 0) {
             return ifEmpty;
@@ -152,8 +198,11 @@ public static class CollectionExtensions {
         return list[idx];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T AtWrap<T>(this RawList<T> list, int index, T ifEmpty = default) {
         if (list == null || list.size == 0) {
             return ifEmpty;
@@ -164,8 +213,11 @@ public static class CollectionExtensions {
         return list[idx];
     }
 
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static ref T AtWrapRef<T>(this RawList<T> list, int index) {
         if (list == null || list.size == 0) {
             throw new IndexOutOfRangeException();
@@ -176,8 +228,11 @@ public static class CollectionExtensions {
         return ref list[idx];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static List<T> Filter<T>(this T[] array, Func<T, bool> func) {
         var result = new List<T>(array.Length);
         for (var i = 0; i < array.Length; i++) {
@@ -189,8 +244,11 @@ public static class CollectionExtensions {
         return result;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static List<T> Filter<T>(this List<T> list, Func<T, bool> func) {
         var result = new List<T>(list.Count);
         for (var i = 0; i < list.Count; i++) {
@@ -202,8 +260,11 @@ public static class CollectionExtensions {
         return result;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static List<R> Map<T, R>(this List<T> list, Func<T, R> func) {
         var result = new List<R>(list.Count);
         for (var i = 0; i < list.Count; i++) {
@@ -213,8 +274,11 @@ public static class CollectionExtensions {
         return result;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static List<R> Map<T, R>(this List<T> list, Func<T, int, R> func) {
         var result = new List<R>(list.Count);
         for (var i = 0; i < list.Count; i++) {
@@ -224,8 +288,11 @@ public static class CollectionExtensions {
         return result;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static List<R> Map<T, R>(this T[] array, Func<T, R> func) {
         var result = new List<R>(array.Length);
         for (var i = 0; i < array.Length; i++) {
@@ -235,8 +302,11 @@ public static class CollectionExtensions {
         return result;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static List<R> Map<T, R>(this T[] array, Func<T, int, R> func) {
         var result = new List<R>(array.Length);
         for (var i = 0; i < array.Length; i++) {
@@ -246,8 +316,11 @@ public static class CollectionExtensions {
         return result;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static R Fold<T, R>(this List<T> list, Func<R, T, R> func, R acc) {
         for (var i = 0; i < list.Count; i++) {
             acc = func.Invoke(acc, list[i]);
@@ -256,8 +329,11 @@ public static class CollectionExtensions {
         return acc;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T Fold<T>(this List<T> list, Func<T, T, T> func) {
         var acc = list.At(0);
         for (var i = 1; i < list.Count; i++) {
@@ -267,8 +343,11 @@ public static class CollectionExtensions {
         return acc;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static R Fold<T, R>(this T[] array, Func<R, T, R> func, R acc) {
         for (var i = 0; i < array.Length; i++) {
             acc = func.Invoke(acc, array[i]);
@@ -277,8 +356,11 @@ public static class CollectionExtensions {
         return acc;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T Fold<T>(this T[] array, Func<T, T, T> func) {
         var acc = array.At(0);
         for (var i = 0; i < array.Length; i++) {
@@ -288,8 +370,11 @@ public static class CollectionExtensions {
         return acc;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static int Sum<T>(this List<T> list, Func<T, int> func, int acc = 0) {
         for (var i = 0; i < list.Count; i++) {
             acc += func.Invoke(list[i]);
@@ -298,8 +383,11 @@ public static class CollectionExtensions {
         return acc;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static float Sum<T>(this List<T> list, Func<T, float> func, float acc = 0f) {
         for (var i = 0; i < list.Count; i++) {
             acc += func.Invoke(list[i]);
@@ -308,8 +396,11 @@ public static class CollectionExtensions {
         return acc;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T MinBy<T>(this List<T> list, Func<T, float> func, T ifEmpty = default) {
         if (list.IsNullOrEmpty()) {
             return ifEmpty;
@@ -328,8 +419,11 @@ public static class CollectionExtensions {
         return list[idx];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T MinBy<T>(this T[] array, Func<T, float> func, T ifEmpty = default) {
         if (array.IsNullOrEmpty()) {
             return ifEmpty;
@@ -348,8 +442,11 @@ public static class CollectionExtensions {
         return array[idx];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T MaxBy<T>(this List<T> list, Func<T, float> func, T ifEmpty = default) {
         if (list.IsNullOrEmpty()) {
             return ifEmpty;
@@ -368,8 +465,11 @@ public static class CollectionExtensions {
         return list[idx];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T MaxBy<T>(this T[] array, Func<T, float> func, T ifEmpty = default) {
         if (array.IsNullOrEmpty()) {
             return ifEmpty;
@@ -388,8 +488,11 @@ public static class CollectionExtensions {
         return array[idx];
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static int Count<T>(this T[] array, Func<T, bool> func) {
         var count = 0;
         for (var i = 0; i < array.Length; i++) {
@@ -399,8 +502,11 @@ public static class CollectionExtensions {
         return count;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static int Count<T>(this List<T> list, Func<T, bool> func) {
         var count = 0;
         for (var i = 0; i < list.Count; i++) {
@@ -410,8 +516,11 @@ public static class CollectionExtensions {
         return count;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static bool Any<T>(this T[] array, Func<T, bool> func) {
         for (var i = 0; i < array.Length; i++) {
             if (func.Invoke(array[i])) {
@@ -422,8 +531,11 @@ public static class CollectionExtensions {
         return false;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static bool Any<T>(this List<T> list, Func<T, bool> func) {
         for (var i = 0; i < list.Count; i++) {
             if (func.Invoke(list[i])) {
@@ -434,8 +546,11 @@ public static class CollectionExtensions {
         return false;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static bool All<T>(this List<T> list, Func<T, bool> func) {
         for (var i = 0; i < list.Count; i++) {
             if (!func.Invoke(list[i])) {
@@ -446,8 +561,11 @@ public static class CollectionExtensions {
         return true;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static bool All<T>(this T[] array, Func<T, bool> func) {
         for (var i = 0; i < array.Length; i++) {
             if (!func.Invoke(array[i])) {
@@ -458,16 +576,22 @@ public static class CollectionExtensions {
         return true;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static List<T> Except<T>(this List<T> list, T item) {
         var result = new List<T>(list);
         result.Remove(item);
         return result;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static int IndexOf<T>(this List<T> list, Func<T, bool> func, int ifAbsent = -1) {
         for (var i = 0; i < list.Count; i++) {
             if (func.Invoke(list[i])) {
@@ -478,8 +602,11 @@ public static class CollectionExtensions {
         return ifAbsent;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static int IndexOf<T>(this T[] array, Func<T, bool> func, int ifAbsent = -1) {
         for (var i = 0; i < array.Length; i++) {
             if (func.Invoke(array[i])) {
@@ -490,8 +617,11 @@ public static class CollectionExtensions {
         return ifAbsent;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static int IndexOf<T>(this T[] array, T item, int ifAbsent = -1) {
         for (var i = 0; i < array.Length; i++) {
             if (array[i].Equals(item)) {
@@ -502,16 +632,25 @@ public static class CollectionExtensions {
         return ifAbsent;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static bool IsNullOrEmpty<T>(this List<T> list) => list == null || list.Count == 0;
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static bool IsNullOrEmpty<T>(this T[] list) => list == null || list.Length == 0;
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static bool Contains<T>(this T[] array, T item) {
         for (var i = 0; i < array.Length; i++) {
             if (Equals(array[i], item)) {
@@ -522,8 +661,11 @@ public static class CollectionExtensions {
         return false;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T Find<T>(this T[] array, Func<T, bool> func, T ifAbsent = default) {
         for (var i = 0; i < array.Length; i++) {
             if (func.Invoke(array[i])) {
@@ -534,8 +676,11 @@ public static class CollectionExtensions {
         return ifAbsent;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T[] ForEach<T>(this T[] array, Action<T> action) {
         for (var i = 0; i < array.Length; i++) {
             action.Invoke(array[i]);
@@ -544,8 +689,11 @@ public static class CollectionExtensions {
         return array;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T[] ForEach<T>(this T[] array, Action<T, int> action) {
         for (var i = 0; i < array.Length; i++) {
             action.Invoke(array[i], i);
@@ -554,8 +702,11 @@ public static class CollectionExtensions {
         return array;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static List<T> ForEach<T>(this List<T> list, Action<T, int> action) {
         for (var i = 0; i < list.Count; i++) {
             action.Invoke(list[i], i);
@@ -564,8 +715,11 @@ public static class CollectionExtensions {
         return list;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T[] ForEachNotNull<T>(this T[] array, Action<T> action) {
         for (var i = 0; i < array.Length; i++) {
             if (array[i] != null) {
@@ -576,8 +730,11 @@ public static class CollectionExtensions {
         return array;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T Pop<T>(this List<T> list, T ifEmpty = default) {
         if (list.Count == 0) {
             return ifEmpty;
@@ -588,8 +745,11 @@ public static class CollectionExtensions {
         return result;
     }
 
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T AddNotNull<T>(this List<T> list, T value) where T : class {
         if (value == null) {
             return null;
@@ -599,8 +759,11 @@ public static class CollectionExtensions {
         return value;
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static R[] ConvertAll<T, R>(this T[] list) where T : class where R : class {
         var result = new R[list.Length];
         for (var i = 0; i < list.Length; i++) {
@@ -609,8 +772,11 @@ public static class CollectionExtensions {
         return result;
     }
 
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static IEnumerable<T> SeparatedBy<T>(this IEnumerable<T> source, T separator) {
         var first = true;
         foreach (T value in source)

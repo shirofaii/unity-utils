@@ -1,4 +1,3 @@
-using Scellecs.Morpeh.Collections;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -8,9 +7,11 @@ using static Globals;
 namespace SharedUtils {
 
 [Serializable]
-[Il2CppSetOption(Option.NullChecks, false)]
-[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-[Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#if ENABLE_IL2CPP
+    [Il2CppSetOption(Option.NullChecks, false)]
+    [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
 public sealed class RawList<T> {
     public T[] data;
     public int size;
@@ -203,9 +204,11 @@ public sealed class RawList<T> {
         return data.AsSpan(0, size);
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     public struct Enumerator {
         public T[] data;
         public int index;

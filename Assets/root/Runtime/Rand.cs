@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Unity.IL2CPP.CompilerServices;
 using RandN;
 using RandN.Distributions;
 using static Globals;
@@ -12,31 +11,35 @@ namespace SharedUtils {
 public static class Rand {
     private static readonly StandardRng rand = StandardRng.Create();
     
-    [Il2CppSetOption(Option.NullChecks, false)]
     [MethodImpl(inline)] public static int Index<T>(List<T> list) => Uniform.NewInclusive(0, list.Count - 1).Sample(rand);
-    
-    [Il2CppSetOption(Option.NullChecks, false)]
     [MethodImpl(inline)] public static int Index<T>(RawList<T> list) => Uniform.NewInclusive(0, list.size - 1).Sample(rand);
-    
-    [Il2CppSetOption(Option.NullChecks, false)]
     [MethodImpl(inline)] public static int Index<T>(T[] list) => Uniform.NewInclusive(0, list.Length - 1).Sample(rand);
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T AtRandom<T>(this List<T> list, T ifEmpty = default) {
         if(list == null || list.Count == 0) return ifEmpty;
         return list[Index(list)];
     }
 
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T AtRandom<T>(this RawList<T> list, T ifEmpty = default) {
         if(list == null || list.size == 0) return ifEmpty;
         return list[Index(list)];
     }
 
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static T AtRandom<T>(this T[] list, T ifEmpty = default) {
         if(list == null || list.Length == 0) return ifEmpty;
         return list[Index(list)];
@@ -137,8 +140,11 @@ public static class Rand {
         }
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static RandomStartEnumeratorForListOf<T> FromRandomStart<T>(this List<T> list) {
         var idx = Index(list);
         return new RandomStartEnumeratorForListOf<T> {
@@ -148,9 +154,11 @@ public static class Rand {
         };
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     public struct RandomStartEnumeratorForListOf<T> {
         public List<T> data;
         public int index;
@@ -170,8 +178,11 @@ public static class Rand {
         }
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static RandomStartEnumeratorForRawListOf<T> FromRandomStart<T>(this RawList<T> list) {
         var idx = Index(list);
         return new RandomStartEnumeratorForRawListOf<T> {
@@ -181,9 +192,11 @@ public static class Rand {
         };
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     public struct RandomStartEnumeratorForRawListOf<T> {
         public RawList<T> data;
         public int index;
@@ -203,20 +216,29 @@ public static class Rand {
         }
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static void Shuffle<T>(this T[] array) {
         rand.ShuffleInPlace(array.AsSpan());
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static void Shuffle<T>(this List<T> list) {
         rand.ShuffleInPlace(list);
     }
     
+#if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+    [Il2CppSetOption(Option.DivideByZeroChecks, false)]
+#endif
     [MethodImpl(inline)] public static void Shuffle<T>(this RawList<T> list) {
         rand.ShuffleInPlace(list.AsSpan());
     }
