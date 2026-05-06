@@ -1,4 +1,3 @@
-using Sirenix.OdinInspector;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using static Globals;
@@ -61,7 +60,6 @@ public class CanvasGrid {
         Recalculate();
     }
 
-    [Button]
     private void Recalculate() {
         var cam = Camera.main!;
 
