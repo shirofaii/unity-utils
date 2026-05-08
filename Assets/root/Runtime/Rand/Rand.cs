@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using RandN;
 using RandN.Distributions;
-using static Globals;
+using static System.Runtime.CompilerServices.MethodImplOptions;
 
 // ReSharper disable InconsistentNaming
 
@@ -11,16 +11,16 @@ namespace SharedUtils {
 public static class Rand {
     private static readonly StandardRng rand = StandardRng.Create();
     
-    [MethodImpl(inline)] public static int Index<T>(List<T> list) => Uniform.NewInclusive(0, list.Count - 1).Sample(rand);
-    [MethodImpl(inline)] public static int Index<T>(RawList<T> list) => Uniform.NewInclusive(0, list.size - 1).Sample(rand);
-    [MethodImpl(inline)] public static int Index<T>(T[] list) => Uniform.NewInclusive(0, list.Length - 1).Sample(rand);
+    [MethodImpl(AggressiveInlining)] public static int Index<T>(List<T> list) => Uniform.NewInclusive(0, list.Count - 1).Sample(rand);
+    [MethodImpl(AggressiveInlining)] public static int Index<T>(RawList<T> list) => Uniform.NewInclusive(0, list.size - 1).Sample(rand);
+    [MethodImpl(AggressiveInlining)] public static int Index<T>(T[] list) => Uniform.NewInclusive(0, list.Length - 1).Sample(rand);
     
 #if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(inline)] public static T AtRandom<T>(this List<T> list, T ifEmpty = default) {
+    [MethodImpl(AggressiveInlining)] public static T AtRandom<T>(this List<T> list, T ifEmpty = default) {
         if(list == null || list.Count == 0) return ifEmpty;
         return list[Index(list)];
     }
@@ -30,7 +30,7 @@ public static class Rand {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(inline)] public static T AtRandom<T>(this RawList<T> list, T ifEmpty = default) {
+    [MethodImpl(AggressiveInlining)] public static T AtRandom<T>(this RawList<T> list, T ifEmpty = default) {
         if(list == null || list.size == 0) return ifEmpty;
         return list[Index(list)];
     }
@@ -40,12 +40,12 @@ public static class Rand {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(inline)] public static T AtRandom<T>(this T[] list, T ifEmpty = default) {
+    [MethodImpl(AggressiveInlining)] public static T AtRandom<T>(this T[] list, T ifEmpty = default) {
         if(list == null || list.Length == 0) return ifEmpty;
         return list[Index(list)];
     }
     
-    [MethodImpl(inline)] public static float Float(float to) => Uniform.NewInclusive(0f, to).Sample(rand);
+    [MethodImpl(AggressiveInlining)] public static float Float(float to) => Uniform.NewInclusive(0f, to).Sample(rand);
 
     public struct Dice {
         public enum Keep { Sum, Best, Worst }
@@ -63,34 +63,34 @@ public static class Rand {
         }
 
         public Dice best {
-            [MethodImpl(inline)] get {
+            [MethodImpl(AggressiveInlining)] get {
                 keep = Keep.Best;
                 return this;
             }
         }
 
         public Dice worst {
-            [MethodImpl(inline)] get {
+            [MethodImpl(AggressiveInlining)] get {
                 keep = Keep.Worst;
                 return this;
             }
         }
 
-        [MethodImpl(inline)] public static implicit operator int(Dice d) => d.Roll();
+        [MethodImpl(AggressiveInlining)] public static implicit operator int(Dice d) => d.Roll();
 
-        [MethodImpl(inline)] public static Dice operator *(int times, Dice dice) {
+        [MethodImpl(AggressiveInlining)] public static Dice operator *(int times, Dice dice) {
             dice.numberOfDices *= times;
             return dice;
         }
 
-        [MethodImpl(inline)] public static Dice operator +(Dice dice, int add) {
+        [MethodImpl(AggressiveInlining)] public static Dice operator +(Dice dice, int add) {
             dice.additive += add;
             return dice;
         }
 
-        [MethodImpl(inline)] private int OneDiceRoll() => Uniform.NewInclusive(1, sides).Sample(rand);  
+        [MethodImpl(AggressiveInlining)] private int OneDiceRoll() => Uniform.NewInclusive(1, sides).Sample(rand);  
         
-        [MethodImpl(inline)] public int Roll() {
+        [MethodImpl(AggressiveInlining)] public int Roll() {
             switch (keep) {
                 case Keep.Worst: {
                     var min = OneDiceRoll();
@@ -125,14 +125,14 @@ public static class Rand {
             }
         }
 
-        [MethodImpl(inline)] public void Times(Action<int> action) {
+        [MethodImpl(AggressiveInlining)] public void Times(Action<int> action) {
             var roll = Roll() - additive;
             for(var i = 0; i < roll; i++) {
                 action.Invoke(i);
             }
         }
 
-        [MethodImpl(inline)] public void Times(Action action) {
+        [MethodImpl(AggressiveInlining)] public void Times(Action action) {
             var roll = Roll() - additive;
             for(var i = 0; i < roll; i++) {
                 action.Invoke();
@@ -145,7 +145,7 @@ public static class Rand {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(inline)] public static RandomStartEnumeratorForListOf<T> FromRandomStart<T>(this List<T> list) {
+    [MethodImpl(AggressiveInlining)] public static RandomStartEnumeratorForListOf<T> FromRandomStart<T>(this List<T> list) {
         var idx = Index(list);
         return new RandomStartEnumeratorForListOf<T> {
             data = list,
@@ -164,8 +164,8 @@ public static class Rand {
         public int index;
         public int stopIndex;
         
-        [MethodImpl(inline)] public RandomStartEnumeratorForListOf<T> GetEnumerator() => this;
-        [MethodImpl(inline)] public bool MoveNext() {
+        [MethodImpl(AggressiveInlining)] public RandomStartEnumeratorForListOf<T> GetEnumerator() => this;
+        [MethodImpl(AggressiveInlining)] public bool MoveNext() {
             index++;
             if(index >= data.Count) index = 0;
             if(index == stopIndex) return false;
@@ -174,7 +174,7 @@ public static class Rand {
         }
 
         public T Current {
-            [MethodImpl(inline)] get => data[index];
+            [MethodImpl(AggressiveInlining)] get => data[index];
         }
     }
     
@@ -183,7 +183,7 @@ public static class Rand {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(inline)] public static RandomStartEnumeratorForRawListOf<T> FromRandomStart<T>(this RawList<T> list) {
+    [MethodImpl(AggressiveInlining)] public static RandomStartEnumeratorForRawListOf<T> FromRandomStart<T>(this RawList<T> list) {
         var idx = Index(list);
         return new RandomStartEnumeratorForRawListOf<T> {
             data = list,
@@ -202,8 +202,8 @@ public static class Rand {
         public int index;
         public int stopIndex;
         
-        [MethodImpl(inline)] public RandomStartEnumeratorForRawListOf<T> GetEnumerator() => this;
-        [MethodImpl(inline)] public bool MoveNext() {
+        [MethodImpl(AggressiveInlining)] public RandomStartEnumeratorForRawListOf<T> GetEnumerator() => this;
+        [MethodImpl(AggressiveInlining)] public bool MoveNext() {
             index++;
             if(index >= data.size) index = 0;
             if(index == stopIndex) return false;
@@ -212,7 +212,7 @@ public static class Rand {
         }
 
         public ref T Current {
-            [MethodImpl(inline)] get => ref data[index];
+            [MethodImpl(AggressiveInlining)] get => ref data[index];
         }
     }
     
@@ -221,7 +221,7 @@ public static class Rand {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(inline)] public static void Shuffle<T>(this T[] array) {
+    [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this T[] array) {
         rand.ShuffleInPlace(array.AsSpan());
     }
     
@@ -230,7 +230,7 @@ public static class Rand {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(inline)] public static void Shuffle<T>(this List<T> list) {
+    [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this List<T> list) {
         rand.ShuffleInPlace(list);
     }
     
@@ -239,7 +239,7 @@ public static class Rand {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(inline)] public static void Shuffle<T>(this RawList<T> list) {
+    [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this RawList<T> list) {
         rand.ShuffleInPlace(list.AsSpan());
     }
 }

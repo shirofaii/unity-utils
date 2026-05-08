@@ -2,7 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using SharedUtils;
 using UnityEngine;
-using static Globals;
+using static System.Runtime.CompilerServices.MethodImplOptions;
 
 public readonly struct RectMapULong {
     public readonly RectData<CacheSafeULong> data;
@@ -12,10 +12,10 @@ public readonly struct RectMapULong {
     }
     
     public Span<ulong> this[int x, int y] {
-        [MethodImpl(inline)] get => data[x, y].GetSpan();
+        [MethodImpl(AggressiveInlining)] get => data[x, y].GetSpan();
     }
 
     public Span<ulong> this[Vector2Int pos] {
-        [MethodImpl(inline)] get => data[pos.x, pos.y].GetSpan();
+        [MethodImpl(AggressiveInlining)] get => data[pos.x, pos.y].GetSpan();
     }
 }

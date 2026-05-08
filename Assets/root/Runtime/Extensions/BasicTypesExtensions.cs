@@ -1,9 +1,9 @@
 using System.Runtime.CompilerServices;
-using static Globals;
+using static System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace SharedUtils {
 public static class BasicTypesExtensions {
-    [MethodImpl(inline)] public static bool IsNullOrWhitespace(this string str) {
+    [MethodImpl(AggressiveInlining)] public static bool IsNullOrWhitespace(this string str) {
         return string.IsNullOrWhiteSpace(str);
     }
 }

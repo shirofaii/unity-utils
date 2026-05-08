@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
-using static Globals;
+using static System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace SharedUtils {
 public class CanvasGrid {
@@ -23,35 +23,35 @@ public class CanvasGrid {
         Recalculate();
     }
 
-    [MethodImpl(inline)] public Rect GetCellScreenSpace(int x, int y) {
+    [MethodImpl(AggressiveInlining)] public Rect GetCellScreenSpace(int x, int y) {
         return cells[x * gridSize.y + y];
     }
 
-    [MethodImpl(inline)] public Rect GetCellScreenSpace(Vector2Int position) {
+    [MethodImpl(AggressiveInlining)] public Rect GetCellScreenSpace(Vector2Int position) {
         return cells[position.x * gridSize.y + position.y];
     }
 
-    [MethodImpl(inline)] public Rect GetCellWorldSpace(int x, int y) {
+    [MethodImpl(AggressiveInlining)] public Rect GetCellWorldSpace(int x, int y) {
         return cellsWorldsSpace[x * gridSize.y + y];
     }
 
-    [MethodImpl(inline)] public Rect GetCellWorldSpace(Vector2Int position) {
+    [MethodImpl(AggressiveInlining)] public Rect GetCellWorldSpace(Vector2Int position) {
         return cellsWorldsSpace[position.x * gridSize.y + position.y];
     }
 
-    [MethodImpl(inline)] public Rect GetRectSizeScreenSpace(RectInt rect) {
+    [MethodImpl(AggressiveInlining)] public Rect GetRectSizeScreenSpace(RectInt rect) {
         var min = cells[rect.min.x * gridSize.y + rect.min.y].min;
         var max = cells[(rect.max.x - 1) * gridSize.y + (rect.max.y - 1)].max;
         return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
     }
 
-    [MethodImpl(inline)] public Rect GetRectSizeWorldSpace(RectInt rect) {
+    [MethodImpl(AggressiveInlining)] public Rect GetRectSizeWorldSpace(RectInt rect) {
         var min = cellsWorldsSpace[rect.min.x * gridSize.y + rect.min.y].min;
         var max = cellsWorldsSpace[(rect.max.x - 1) * gridSize.y + (rect.max.y - 1)].max;
         return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
     }
 
-    [MethodImpl(inline)] public void Update() {
+    [MethodImpl(AggressiveInlining)] public void Update() {
         if(screenSize.x == Screen.width && screenSize.y == Screen.height) {
             return;
         }

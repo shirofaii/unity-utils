@@ -2,7 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Unity.IL2CPP.CompilerServices;
-using static Globals;
+using static System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace SharedUtils {
 
@@ -28,7 +28,7 @@ public struct CacheSafeULong {
     [FieldOffset(48)] private ulong e5;
     [FieldOffset(56)] private ulong e6;
     
-    [MethodImpl(inline)] public Span<ulong> GetSpan() {
+    [MethodImpl(AggressiveInlining)] public Span<ulong> GetSpan() {
         if (useFallback) {
             return fallbackList.data.AsSpan(0, size);
         }
@@ -40,7 +40,7 @@ public struct CacheSafeULong {
         }
     }
 
-    [MethodImpl(inline)] public void AddOnce(ulong item) {
+    [MethodImpl(AggressiveInlining)] public void AddOnce(ulong item) {
         if (!useFallback && size == maxSize) {
             unsafe {
                 fixed (ulong* arr = &e0) {
@@ -84,7 +84,7 @@ public struct CacheSafeULong {
         }
     }
     
-    [MethodImpl(inline)] public void Remove(ulong item) {
+    [MethodImpl(AggressiveInlining)] public void Remove(ulong item) {
         if (useFallback) {
             for (var i = 0; i < fallbackList.size; i++) {
                 if (fallbackList.data[i].Equals(item)) {
