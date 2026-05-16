@@ -51,13 +51,14 @@ public class CanvasGrid {
         return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
     }
 
-    [MethodImpl(AggressiveInlining)] public void Update() {
+    [MethodImpl(AggressiveInlining)] public bool Update() {
         if(screenSize.x == Screen.width && screenSize.y == Screen.height) {
-            return;
+            return false;
         }
 
         screenSize = new Vector2Int(Screen.width, Screen.height);
         Recalculate();
+        return true;
     }
 
     private void Recalculate() {
