@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using RandN;
-using RandN.Distributions;
+using System.Security.Cryptography;
 using static System.Runtime.CompilerServices.MethodImplOptions;
 
 // ReSharper disable InconsistentNaming
 
 namespace SharedUtils {
 public static class Rand {
-    private static readonly StandardRng rand = StandardRng.Create();
-    
-    [MethodImpl(AggressiveInlining)] public static int Index<T>(List<T> list) => Uniform.NewInclusive(0, list.Count - 1).Sample(rand);
-    [MethodImpl(AggressiveInlining)] public static int Index<T>(RawList<T> list) => Uniform.NewInclusive(0, list.size - 1).Sample(rand);
-    [MethodImpl(AggressiveInlining)] public static int Index<T>(T[] list) => Uniform.NewInclusive(0, list.Length - 1).Sample(rand);
+    [MethodImpl(AggressiveInlining)] public static int Index<T>(List<T> list) => RandomNumberGenerator.GetInt32(0, list.Count);
+    [MethodImpl(AggressiveInlining)] public static int Index<T>(RawList<T> list) => RandomNumberGenerator.GetInt32(0, list.size);
+    [MethodImpl(AggressiveInlining)] public static int Index<T>(T[] list) => RandomNumberGenerator.GetInt32(0, list.Length);
     
 #if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
@@ -45,7 +42,7 @@ public static class Rand {
         return list[Index(list)];
     }
     
-    [MethodImpl(AggressiveInlining)] public static float Float(float to) => Uniform.NewInclusive(0f, to).Sample(rand);
+    [MethodImpl(AggressiveInlining)] public static float Float(float to) => UnityEngine.Random.Range(0f, to);
 
     public struct Dice {
         public enum Keep { Sum, Best, Worst }
@@ -88,7 +85,7 @@ public static class Rand {
             return dice;
         }
 
-        [MethodImpl(AggressiveInlining)] private int OneDiceRoll() => Uniform.NewInclusive(1, sides).Sample(rand);  
+        [MethodImpl(AggressiveInlining)] private int OneDiceRoll() => RandomNumberGenerator.GetInt32(1, sides + 1);
         
         [MethodImpl(AggressiveInlining)] public int Roll() {
             switch (keep) {
@@ -222,7 +219,10 @@ public static class Rand {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this T[] array) {
-        rand.ShuffleInPlace(array.AsSpan());
+        for (var i = array.Length - 1; i > 0; i--) {
+            var j = RandomNumberGenerator.GetInt32(i + 1);
+            (array[i], array[j]) = (array[j], array[i]);
+        }
     }
     
 #if ENABLE_IL2CPP
@@ -231,7 +231,10 @@ public static class Rand {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this List<T> list) {
-        rand.ShuffleInPlace(list);
+        for (var i = list.Count - 1; i > 0; i--) {
+            var j = RandomNumberGenerator.GetInt32(i + 1);
+            (list[i], list[j]) = (list[j], list[i]);
+        }
     }
     
 #if ENABLE_IL2CPP
@@ -240,7 +243,10 @@ public static class Rand {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this RawList<T> list) {
-        rand.ShuffleInPlace(list.AsSpan());
+        for (var i = list.size - 1; i > 0; i--) {
+            var j = RandomNumberGenerator.GetInt32(i + 1);
+            (list[i], list[j]) = (list[j], list[i]);
+        }
     }
 }
 }
