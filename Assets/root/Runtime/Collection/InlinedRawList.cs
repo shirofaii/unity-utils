@@ -100,7 +100,7 @@ public struct InlinedRawList<T> {
             ArrayHelpers.Grow(ref data, capacity);
         }
 
-        other.CopyTo(data.AsSpan().Slice(size, size + other.Length));
+        other.CopyTo(data.AsSpan(size, other.Length));
         
         size += other.Length;
     }

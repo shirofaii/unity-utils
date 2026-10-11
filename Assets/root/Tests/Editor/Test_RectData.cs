@@ -1,49 +1,110 @@
-using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using RandN;
 using RandN.Distributions;
-using SharedUtils;
 using Unity.PerformanceTesting;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 public class Test_RectData {
-    [Test] public void Test1() {
-        var rect = new RectData<Vector2Int>(new Vector2Int(4, 4));
-        for (var i = 0; i < 4; i++) {
-            for (var j = 0; j < 4; j++) {
+    [Test] public void Indexer_RoundTripsEveryCell([Values(4, 32)] int side) {
+        var rect = new RectData<Vector2Int>(new Vector2Int(side, side));
+        for (var i = 0; i < side; i++) {
+            for (var j = 0; j < side; j++) {
                 rect[i, j] = new Vector2Int(i, j);
             }
         }
 
-        for (var i = 0; i < 4; i++) {
-            for (var j = 0; j < 4; j++) {
-                Assert.AreEqual(rect[i, j], new Vector2Int(i, j));
+        for (var i = 0; i < side; i++) {
+            for (var j = 0; j < side; j++) {
+                Assert.AreEqual(new Vector2Int(i, j), rect[i, j]);
             }
         }
     }
-    
-    [Test] public void Test2() {
-        var rect = new RectData<Vector2Int>(new Vector2Int(32, 32));
-        for (var i = 0; i < 32; i++) {
-            for (var j = 0; j < 32; j++) {
-                rect[i, j] = new Vector2Int(i, j);
-            }
+
+    [Test] public void Contains_MatchesTheSize() {
+        var rect = new RectData<int>(new Vector2Int(3, 5));
+
+        Assert.IsTrue(rect.Contains(0, 0));
+        Assert.IsTrue(rect.Contains(2, 4));
+        Assert.IsFalse(rect.Contains(3, 0));
+        Assert.IsFalse(rect.Contains(0, 5));
+        Assert.IsFalse(rect.Contains(-1, 0));
+        Assert.IsFalse(rect.Contains(new Vector2Int(0, -1)));
+    }
+
+    [Test] public void Enumerator_VisitsEveryCellExactlyOnce([Values(1, 2, 3, 7)] int width, [Values(1, 4, 5)] int height) {
+        var rect = new RectData<int>(new Vector2Int(width, height));
+        foreach (ref var cell in rect) cell++;
+
+        var visited = 0;
+        foreach (var (pos, value) in rect.WithIndexes()) {
+            Assert.AreEqual(1, value, $"{pos}");
+            visited++;
         }
 
-        for (var i = 0; i < 32; i++) {
-            for (var j = 0; j < 32; j++) {
-                Assert.AreEqual(rect[i, j], new Vector2Int(i, j));
-            }
-        }
+        Assert.AreEqual(width * height, visited);
+        Assert.AreEqual(width * height, System.Array.FindAll(rect.data, v => v == 1).Length);
     }
-    
+
+    [Test] public void Enumerator_WithIndexesReportsThePositionOfEachValue() {
+        var rect = new RectData<Vector2Int>(new Vector2Int(4, 3));
+        for (var x = 0; x < 4; x++) for (var y = 0; y < 3; y++) rect[x, y] = new Vector2Int(x, y);
+
+        var positions = new List<Vector2Int>();
+        foreach (var (pos, value) in rect.WithIndexes()) {
+            Assert.AreEqual(pos, value);
+            positions.Add(pos);
+        }
+
+        Assert.AreEqual(12, positions.Count);
+        CollectionAssert.AllItemsAreUnique(positions);
+        CollectionAssert.Contains(positions, Vector2Int.zero);
+        CollectionAssert.Contains(positions, new Vector2Int(3, 2));
+    }
+
+    [Test] public void DataInRect_UsesAnExclusiveMaxLikeRectInt() {
+        var rect = new RectData<int>(new Vector2Int(6, 6));
+        rect[new RectInt(1, 2, 3, 2)] = 1;
+
+        var marked = new List<Vector2Int>();
+        foreach (var (pos, value) in rect.WithIndexes()) if (value == 1) marked.Add(pos);
+
+        Assert.AreEqual(6, marked.Count);
+        for (var x = 1; x < 4; x++) for (var y = 2; y < 4; y++) CollectionAssert.Contains(marked, new Vector2Int(x, y));
+    }
+
+    [Test] public void DataInRect_ClipsToTheBoardAndSkipsEmptyRects() {
+        var rect = new RectData<int>(new Vector2Int(4, 4));
+        rect[new RectInt(-2, 2, 10, 10)] = 1;
+        Assert.AreEqual(8, System.Array.FindAll(rect.data, v => v == 1).Length);
+
+        var visited = 0;
+        foreach (var _ in rect.DataInRect(new RectInt(1, 1, 0, 3))) visited++;
+        foreach (var _ in rect.DataInRect(new RectInt(1, 1, 3, 0))) visited++;
+        foreach (var _ in rect.DataInRect(new RectInt(9, 9, 3, 3))) visited++;
+        Assert.AreEqual(0, visited);
+    }
+
+    [Test] public void IsEmpty_MeansEveryCellIsDefault() {
+        var rect = new RectData<int>(new Vector2Int(5, 5));
+        Assert.IsTrue(rect.IsEmpty());
+        Assert.IsFalse(rect.IsNotEmpty());
+
+        rect[2, 2] = 1;
+        Assert.IsFalse(rect.IsEmpty());
+        Assert.IsTrue(rect.IsNotEmpty(new RectInt(2, 2, 1, 1)));
+        Assert.IsTrue(rect.IsEmpty(new RectInt(0, 0, 2, 5)));
+        Assert.IsTrue(rect.IsEmpty(new RectInt(3, 0, 2, 5)));
+
+        rect.Clear();
+        Assert.IsTrue(rect.IsEmpty());
+    }
+
     [Test, Performance] public void RandomAccess() {
         var rand = StandardRng.Create();
         var s = Uniform.NewInclusive(0, 1023);
         var list = new RectData<int>(new Vector2Int(1024, 1024));
-        
+
         Measure.Method(() => {
             var r = new Vector2Int(s.Sample(rand), s.Sample(rand));
             list[r]++;
@@ -53,7 +114,7 @@ public class Test_RectData {
         .MeasurementCount(200)
         .Run();
     }
-    
+
     [Test, Performance] public void LocalAccess() {
         var rand = StandardRng.Create();
         var s = Uniform.NewInclusive(16, 32);
@@ -68,5 +129,4 @@ public class Test_RectData {
             .MeasurementCount(200)
             .Run();
     }
-
 }

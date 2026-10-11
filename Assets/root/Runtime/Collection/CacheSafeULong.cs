@@ -14,97 +14,72 @@ namespace SharedUtils {
 #endif
 [StructLayout(LayoutKind.Explicit)]
 public struct CacheSafeULong {
-    public const int maxSize = 7;
-    
+    public const int maxSize = 6;
+
     [FieldOffset(0)] private int size;
-    [FieldOffset(4)] private bool useFallback;
-    [FieldOffset(8)] private InlinedRawList<ulong> fallbackList;
-    
-    [FieldOffset(8)] private ulong e0;
-    [FieldOffset(16)] private ulong e1;
-    [FieldOffset(24)] private ulong e2;
-    [FieldOffset(32)] private ulong e3;
-    [FieldOffset(40)] private ulong e4;
-    [FieldOffset(48)] private ulong e5;
-    [FieldOffset(56)] private ulong e6;
-    
-    [MethodImpl(AggressiveInlining)] public Span<ulong> GetSpan() {
-        if (useFallback) {
-            return fallbackList.data.AsSpan(0, size);
-        }
-        
-        unsafe {
-            fixed (ulong* arr = &e0) {
-                return new Span<ulong>(arr, size);
-            }
-        }
+    [FieldOffset(8)] private ulong[] overflow;
+    [FieldOffset(16)] private ulong e0;
+    [FieldOffset(24)] private ulong e1;
+    [FieldOffset(32)] private ulong e2;
+    [FieldOffset(40)] private ulong e3;
+    [FieldOffset(48)] private ulong e4;
+    [FieldOffset(56)] private ulong e5;
+
+    public int Count {
+        [MethodImpl(AggressiveInlining)] get => size;
     }
+
+    public bool IsInline {
+        [MethodImpl(AggressiveInlining)] get => overflow == null;
+    }
+
+    private Span<ulong> inline {
+        [MethodImpl(AggressiveInlining)] get => MemoryMarshal.CreateSpan(ref e0, maxSize);
+    }
+
+    [MethodImpl(AggressiveInlining)] public Span<ulong> GetSpan() {
+        return overflow == null ? inline.Slice(0, size) : overflow.AsSpan(0, size);
+    }
+
+    [MethodImpl(AggressiveInlining)] public bool Contains(ulong item) => GetSpan().IndexOf(item) >= 0;
 
     [MethodImpl(AggressiveInlining)] public void AddOnce(ulong item) {
-        if (!useFallback && size == maxSize) {
-            unsafe {
-                fixed (ulong* arr = &e0) {
-                    for (var i = 0; i < size; i++) {
-                        if (arr[i].Equals(item)) {
-                            return;
-                        }
-                    }
-                }
+        if (Contains(item)) return;
+
+        if (overflow == null) {
+            if (size < maxSize) {
+                inline[size] = item;
+                size++;
+                return;
             }
-            
-            Span<ulong> values = stackalloc ulong[maxSize] { e0, e1, e2, e3, e4, e5, e6 };
-            fallbackList = new InlinedRawList<ulong>(maxSize * 4);
-            fallbackList.AddRange(values);
-            useFallback = true;
-        }
-        
-        if (useFallback) {
-            for (var i = 0; i < fallbackList.size; i++) {
-                if (fallbackList.data[i].Equals(item)) {
-                    return;
-                }
-            }
-            
-            fallbackList.Add(item);
-            return;
+
+            overflow = new ulong[maxSize * 2];
+            inline.CopyTo(overflow);
+        } else if (size == overflow.Length) {
+            Array.Resize(ref overflow, size * 2);
         }
 
-        unsafe {
-            fixed (ulong* arr = &e0) {
-                for (var i = 0; i < size; i++) {
-                    if (arr[i].Equals(item)) {
-                        return;
-                    }
-                }
-                
-                var idx = size;
-                size++;
-                arr[idx] = item;
-            }
+        overflow[size] = item;
+        size++;
+    }
+
+    [MethodImpl(AggressiveInlining)] public void Remove(ulong item) {
+        var items = GetSpan();
+        var index = items.IndexOf(item);
+        if (index < 0) return;
+
+        size--;
+        items[index] = items[size];
+
+        if (overflow != null && size <= maxSize / 2) {
+            overflow.AsSpan(0, size).CopyTo(inline);
+            overflow = null;
         }
     }
-    
-    [MethodImpl(AggressiveInlining)] public void Remove(ulong item) {
-        if (useFallback) {
-            for (var i = 0; i < fallbackList.size; i++) {
-                if (fallbackList.data[i].Equals(item)) {
-                    fallbackList.RemoveAtSwapBackFast(i);
-                    return;
-                }
-            }
-        }
-        
-        unsafe {
-            fixed (ulong* arr = &e0) {
-                for (var i = 0; i < size; i++) {
-                    if (arr[i].Equals(item)) {
-                        arr[i] = arr[size - 1];
-                        size--;
-                        return;
-                    }
-                }
-            }
-        }
+
+    [MethodImpl(AggressiveInlining)] public void Clear() {
+        size = 0;
+        overflow = null;
     }
 }
 }
