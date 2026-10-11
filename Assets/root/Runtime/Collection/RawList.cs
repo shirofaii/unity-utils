@@ -75,7 +75,7 @@ public sealed class RawList<T> {
         return index;
     }
 
-    [MethodImpl(AggressiveInlining)] public void AddRange(RawList<T> other) {
+    public void AddRange(RawList<T> other) {
         if(other.size == 0) return;
 
         var newSize = size + other.size;
@@ -89,15 +89,7 @@ public sealed class RawList<T> {
         size += other.size;
     }
 
-    [MethodImpl(AggressiveInlining)] public int IndexOf(T value) {
-        var comparer = EqualityComparer<T>.Default;
-        for (var i = 0; i < size; i++) {
-            if (comparer.Equals(value, data[i])) {
-                return i;
-            }
-        }
-        return -1;
-    }
+    [MethodImpl(AggressiveInlining)] public int IndexOf(T value) => Array.IndexOf(data, value, 0, size);
 
     [MethodImpl(AggressiveInlining)] public bool Remove(T value) {
         var index = IndexOf(value);
@@ -155,7 +147,7 @@ public sealed class RawList<T> {
         return data[lastIndex];
     }
 
-    [MethodImpl(AggressiveInlining)] public void RemoveRange(int index, int count) {
+    public void RemoveRange(int index, int count) {
         if (index < 0 || index >= size) throw new ArgumentOutOfRangeException(nameof(index));
         if (count < 0) throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number required");
 

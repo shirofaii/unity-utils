@@ -27,17 +27,18 @@ using static System.Runtime.CompilerServices.MethodImplOptions;
     }
 
     public T this[RectInt rect] {
-        [MethodImpl(AggressiveInlining)] set {
-            foreach (ref var x in DataInRect(rect)) {
-                x = value;
-            }
+        set {
+            var min = Vector2Int.Max(rect.min, Vector2Int.zero);
+            var max = Vector2Int.Min(rect.max, size);
+            if (max.y <= min.y) return;
+            for (var x = min.x; x < max.x; x++) Array.Fill(data, value, x * size.y + min.y, max.y - min.y);
         }
     }
 
     [MethodImpl(AggressiveInlining)] public bool Contains(int x, int y) => x >= 0 && y >= 0 && x < size.x && y < size.y;
     [MethodImpl(AggressiveInlining)] public bool Contains(Vector2Int pos) => Contains(pos.x, pos.y);
 
-    [MethodImpl(AggressiveInlining)] public bool IsNotEmpty(RectInt rect) {
+    public bool IsNotEmpty(RectInt rect) {
         foreach (ref readonly var x in DataInRect(rect)) {
             if (!EqualityComparer<T>.Default.Equals(x, default)) return true;
         }
@@ -68,17 +69,17 @@ using static System.Runtime.CompilerServices.MethodImplOptions;
         [MethodImpl(AggressiveInlining)] public RectCursor(RectData<T> host, RectInt rect) {
             min = Vector2Int.Max(rect.min, Vector2Int.zero);
             max = Vector2Int.Min(rect.max, host.size);
-            current = max.x > min.x && max.y > min.y ? new Vector2Int(min.x - 1, min.y) : max;
+            current = max.x > min.x && max.y > min.y ? new Vector2Int(min.x, min.y - 1) : max;
         }
 
         [MethodImpl(AggressiveInlining)] public bool MoveNext() {
-            current.x++;
-            if (current.x < max.x) return true;
-
-            current.x = min.x;
             current.y++;
+            if (current.y < max.y) return true;
 
-            return current.x < max.x && current.y < max.y;
+            current.y = min.y;
+            current.x++;
+
+            return current.y < max.y && current.x < max.x;
         }
     }
 

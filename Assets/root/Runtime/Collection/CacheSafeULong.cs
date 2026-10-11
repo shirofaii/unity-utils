@@ -43,7 +43,7 @@ public struct CacheSafeULong {
 
     [MethodImpl(AggressiveInlining)] public bool Contains(ulong item) => GetSpan().IndexOf(item) >= 0;
 
-    [MethodImpl(AggressiveInlining)] public void AddOnce(ulong item) {
+    public void AddOnce(ulong item) {
         if (Contains(item)) return;
 
         if (overflow == null) {
@@ -63,7 +63,7 @@ public struct CacheSafeULong {
         size++;
     }
 
-    [MethodImpl(AggressiveInlining)] public void Remove(ulong item) {
+    public void Remove(ulong item) {
         var items = GetSpan();
         var index = items.IndexOf(item);
         if (index < 0) return;

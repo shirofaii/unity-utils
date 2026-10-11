@@ -91,7 +91,7 @@ public static class Rand {
 
         [MethodImpl(AggressiveInlining)] private int OneDiceRoll() => rng.Next(1, sides + 1);
         
-        [MethodImpl(AggressiveInlining)] public int Roll() {
+        public int Roll() {
             if (numberOfDices <= 0) return additive;
             switch (keep) {
                 case Keep.Worst: {
@@ -127,14 +127,14 @@ public static class Rand {
             }
         }
 
-        [MethodImpl(AggressiveInlining)] public void Times(Action<int> action) {
+        public void Times(Action<int> action) {
             var roll = Roll() - additive;
             for(var i = 0; i < roll; i++) {
                 action.Invoke(i);
             }
         }
 
-        [MethodImpl(AggressiveInlining)] public void Times(Action action) {
+        public void Times(Action action) {
             var roll = Roll() - additive;
             for(var i = 0; i < roll; i++) {
                 action.Invoke();
@@ -221,7 +221,7 @@ public static class Rand {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this T[] array) {
+    public static void Shuffle<T>(this T[] array) {
         for (var i = array.Length - 1; i > 0; i--) {
             var j = rng.Next(i + 1);
             (array[i], array[j]) = (array[j], array[i]);
@@ -233,7 +233,7 @@ public static class Rand {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this List<T> list) {
+    public static void Shuffle<T>(this List<T> list) {
         for (var i = list.Count - 1; i > 0; i--) {
             var j = rng.Next(i + 1);
             (list[i], list[j]) = (list[j], list[i]);
@@ -245,7 +245,7 @@ public static class Rand {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this RawList<T> list) {
+    public static void Shuffle<T>(this RawList<T> list) {
         for (var i = list.size - 1; i > 0; i--) {
             var j = rng.Next(i + 1);
             (list[i], list[j]) = (list[j], list[i]);

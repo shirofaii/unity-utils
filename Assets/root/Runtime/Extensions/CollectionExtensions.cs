@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 #if ENABLE_IL2CPP
@@ -233,7 +233,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static List<T> Filter<T>(this T[] array, Func<T, bool> func) {
+    public static List<T> Filter<T>(this T[] array, Func<T, bool> func) {
         var result = new List<T>(array.Length);
         for (var i = 0; i < array.Length; i++) {
             if (func.Invoke(array[i])) {
@@ -249,7 +249,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static List<T> Filter<T>(this List<T> list, Func<T, bool> func) {
+    public static List<T> Filter<T>(this List<T> list, Func<T, bool> func) {
         var result = new List<T>(list.Count);
         for (var i = 0; i < list.Count; i++) {
             if (func.Invoke(list[i])) {
@@ -265,7 +265,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static List<R> Map<T, R>(this List<T> list, Func<T, R> func) {
+    public static List<R> Map<T, R>(this List<T> list, Func<T, R> func) {
         var result = new List<R>(list.Count);
         for (var i = 0; i < list.Count; i++) {
             result.Add(func.Invoke(list[i]));
@@ -279,7 +279,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static List<R> Map<T, R>(this List<T> list, Func<T, int, R> func) {
+    public static List<R> Map<T, R>(this List<T> list, Func<T, int, R> func) {
         var result = new List<R>(list.Count);
         for (var i = 0; i < list.Count; i++) {
             result.Add(func.Invoke(list[i], i));
@@ -293,7 +293,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static List<R> Map<T, R>(this T[] array, Func<T, R> func) {
+    public static List<R> Map<T, R>(this T[] array, Func<T, R> func) {
         var result = new List<R>(array.Length);
         for (var i = 0; i < array.Length; i++) {
             result.Add(func.Invoke(array[i]));
@@ -307,7 +307,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static List<R> Map<T, R>(this T[] array, Func<T, int, R> func) {
+    public static List<R> Map<T, R>(this T[] array, Func<T, int, R> func) {
         var result = new List<R>(array.Length);
         for (var i = 0; i < array.Length; i++) {
             result.Add(func.Invoke(array[i], i));
@@ -321,7 +321,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static R Fold<T, R>(this List<T> list, Func<R, T, R> func, R acc) {
+    public static R Fold<T, R>(this List<T> list, Func<R, T, R> func, R acc) {
         for (var i = 0; i < list.Count; i++) {
             acc = func.Invoke(acc, list[i]);
         }
@@ -334,7 +334,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static T Fold<T>(this List<T> list, Func<T, T, T> func) {
+    public static T Fold<T>(this List<T> list, Func<T, T, T> func) {
         var acc = list.At(0);
         for (var i = 1; i < list.Count; i++) {
             acc = func.Invoke(acc, list[i]);
@@ -348,7 +348,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static R Fold<T, R>(this T[] array, Func<R, T, R> func, R acc) {
+    public static R Fold<T, R>(this T[] array, Func<R, T, R> func, R acc) {
         for (var i = 0; i < array.Length; i++) {
             acc = func.Invoke(acc, array[i]);
         }
@@ -361,7 +361,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static T Fold<T>(this T[] array, Func<T, T, T> func) {
+    public static T Fold<T>(this T[] array, Func<T, T, T> func) {
         var acc = array.At(0);
         for (var i = 1; i < array.Length; i++) {
             acc = func.Invoke(acc, array[i]);
@@ -375,7 +375,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static int Sum<T>(this List<T> list, Func<T, int> func, int acc = 0) {
+    public static int Sum<T>(this List<T> list, Func<T, int> func, int acc = 0) {
         for (var i = 0; i < list.Count; i++) {
             acc += func.Invoke(list[i]);
         }
@@ -388,7 +388,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static float Sum<T>(this List<T> list, Func<T, float> func, float acc = 0f) {
+    public static float Sum<T>(this List<T> list, Func<T, float> func, float acc = 0f) {
         for (var i = 0; i < list.Count; i++) {
             acc += func.Invoke(list[i]);
         }
@@ -401,7 +401,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static T MinBy<T>(this List<T> list, Func<T, float> func, T ifEmpty = default) {
+    public static T MinBy<T>(this List<T> list, Func<T, float> func, T ifEmpty = default) {
         if (list.IsNullOrEmpty()) {
             return ifEmpty;
         }
@@ -424,7 +424,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static T MinBy<T>(this T[] array, Func<T, float> func, T ifEmpty = default) {
+    public static T MinBy<T>(this T[] array, Func<T, float> func, T ifEmpty = default) {
         if (array.IsNullOrEmpty()) {
             return ifEmpty;
         }
@@ -447,7 +447,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static T MaxBy<T>(this List<T> list, Func<T, float> func, T ifEmpty = default) {
+    public static T MaxBy<T>(this List<T> list, Func<T, float> func, T ifEmpty = default) {
         if (list.IsNullOrEmpty()) {
             return ifEmpty;
         }
@@ -470,7 +470,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static T MaxBy<T>(this T[] array, Func<T, float> func, T ifEmpty = default) {
+    public static T MaxBy<T>(this T[] array, Func<T, float> func, T ifEmpty = default) {
         if (array.IsNullOrEmpty()) {
             return ifEmpty;
         }
@@ -493,7 +493,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static int Count<T>(this T[] array, Func<T, bool> func) {
+    public static int Count<T>(this T[] array, Func<T, bool> func) {
         var count = 0;
         for (var i = 0; i < array.Length; i++) {
             count += func.Invoke(array[i]) ? 1 : 0;
@@ -507,7 +507,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static int Count<T>(this List<T> list, Func<T, bool> func) {
+    public static int Count<T>(this List<T> list, Func<T, bool> func) {
         var count = 0;
         for (var i = 0; i < list.Count; i++) {
             count += func.Invoke(list[i]) ? 1 : 0;
@@ -521,7 +521,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static bool Any<T>(this T[] array, Func<T, bool> func) {
+    public static bool Any<T>(this T[] array, Func<T, bool> func) {
         for (var i = 0; i < array.Length; i++) {
             if (func.Invoke(array[i])) {
                 return true;
@@ -536,7 +536,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static bool Any<T>(this List<T> list, Func<T, bool> func) {
+    public static bool Any<T>(this List<T> list, Func<T, bool> func) {
         for (var i = 0; i < list.Count; i++) {
             if (func.Invoke(list[i])) {
                 return true;
@@ -551,7 +551,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static bool All<T>(this List<T> list, Func<T, bool> func) {
+    public static bool All<T>(this List<T> list, Func<T, bool> func) {
         for (var i = 0; i < list.Count; i++) {
             if (!func.Invoke(list[i])) {
                 return false;
@@ -566,7 +566,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static bool All<T>(this T[] array, Func<T, bool> func) {
+    public static bool All<T>(this T[] array, Func<T, bool> func) {
         for (var i = 0; i < array.Length; i++) {
             if (!func.Invoke(array[i])) {
                 return false;
@@ -592,7 +592,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static int IndexOf<T>(this List<T> list, Func<T, bool> func, int ifAbsent = -1) {
+    public static int IndexOf<T>(this List<T> list, Func<T, bool> func, int ifAbsent = -1) {
         for (var i = 0; i < list.Count; i++) {
             if (func.Invoke(list[i])) {
                 return i;
@@ -607,7 +607,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static int IndexOf<T>(this T[] array, Func<T, bool> func, int ifAbsent = -1) {
+    public static int IndexOf<T>(this T[] array, Func<T, bool> func, int ifAbsent = -1) {
         for (var i = 0; i < array.Length; i++) {
             if (func.Invoke(array[i])) {
                 return i;
@@ -623,14 +623,8 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [MethodImpl(AggressiveInlining)] public static int IndexOf<T>(this T[] array, T item, int ifAbsent = -1) {
-        var comparer = EqualityComparer<T>.Default;
-        for (var i = 0; i < array.Length; i++) {
-            if (comparer.Equals(array[i], item)) {
-                return i;
-            }
-        }
-
-        return ifAbsent;
+        var index = Array.IndexOf(array, item);
+        return index < 0 ? ifAbsent : index;
     }
     
 #if ENABLE_IL2CPP
@@ -652,23 +646,14 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static bool Contains<T>(this T[] array, T item) {
-        var comparer = EqualityComparer<T>.Default;
-        for (var i = 0; i < array.Length; i++) {
-            if (comparer.Equals(array[i], item)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    [MethodImpl(AggressiveInlining)] public static bool Contains<T>(this T[] array, T item) => Array.IndexOf(array, item) >= 0;
     
 #if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static T Find<T>(this T[] array, Func<T, bool> func, T ifAbsent = default) {
+    public static T Find<T>(this T[] array, Func<T, bool> func, T ifAbsent = default) {
         for (var i = 0; i < array.Length; i++) {
             if (func.Invoke(array[i])) {
                 return array[i];
@@ -683,7 +668,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static T[] ForEach<T>(this T[] array, Action<T> action) {
+    public static T[] ForEach<T>(this T[] array, Action<T> action) {
         for (var i = 0; i < array.Length; i++) {
             action.Invoke(array[i]);
         }
@@ -696,7 +681,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static T[] ForEach<T>(this T[] array, Action<T, int> action) {
+    public static T[] ForEach<T>(this T[] array, Action<T, int> action) {
         for (var i = 0; i < array.Length; i++) {
             action.Invoke(array[i], i);
         }
@@ -709,7 +694,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static List<T> ForEach<T>(this List<T> list, Action<T, int> action) {
+    public static List<T> ForEach<T>(this List<T> list, Action<T, int> action) {
         for (var i = 0; i < list.Count; i++) {
             action.Invoke(list[i], i);
         }
@@ -722,7 +707,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static T[] ForEachNotNull<T>(this T[] array, Action<T> action) {
+    public static T[] ForEachNotNull<T>(this T[] array, Action<T> action) {
         for (var i = 0; i < array.Length; i++) {
             if (array[i] != null) {
                 action.Invoke(array[i]);
@@ -766,7 +751,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static R[] ConvertAll<T, R>(this T[] list) where T : class where R : class {
+    public static R[] ConvertAll<T, R>(this T[] list) where T : class where R : class {
         var result = new R[list.Length];
         for (var i = 0; i < list.Length; i++) {
             result[i] = list[i] as R;
@@ -779,7 +764,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [MethodImpl(AggressiveInlining)] public static IEnumerable<T> SeparatedBy<T>(this IEnumerable<T> source, T separator) {
+    public static IEnumerable<T> SeparatedBy<T>(this IEnumerable<T> source, T separator) {
         var first = true;
         foreach (T value in source)
         {
