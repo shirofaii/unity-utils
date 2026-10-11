@@ -44,13 +44,8 @@ public static class DirectionHelper {
   }
 
   public static void ForEach(this Direction direction, Action<Direction> action) {
-    if (direction.HasFlag(Direction.N)) { action.Invoke(Direction.N); }
-    if (direction.HasFlag(Direction.NE)) { action.Invoke(Direction.NE); }
-    if (direction.HasFlag(Direction.E)) { action.Invoke(Direction.E); }
-    if (direction.HasFlag(Direction.SE)) { action.Invoke(Direction.SE); }
-    if (direction.HasFlag(Direction.S)) { action.Invoke(Direction.S); }
-    if (direction.HasFlag(Direction.SW)) { action.Invoke(Direction.SW); }
-    if (direction.HasFlag(Direction.W)) { action.Invoke(Direction.W); }
-    if (direction.HasFlag(Direction.NW)) { action.Invoke(Direction.NW); }
+    foreach (var one in All) {
+      if ((direction & one) != 0) action.Invoke(one);
+    }
   }
 }

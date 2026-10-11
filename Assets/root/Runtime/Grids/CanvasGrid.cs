@@ -9,7 +9,9 @@ public class CanvasGrid {
     public readonly Vector2Int gridSize = new Vector2Int(42, 24);
     private float scaleFactor = 1f;
     public readonly int gap = 6;
-    
+    // gap scaled to the current resolution: screen pixels between neighbouring cells
+    public float screenGap { get; private set; }
+
     public Vector2 worldUnitsInCamera;
     public Vector2 pixelToWorld;
 
@@ -20,6 +22,7 @@ public class CanvasGrid {
     public CanvasGrid() {
         cells = new Rect[gridSize.x * gridSize.y];
         cellsWorldsSpace = new Rect[gridSize.x * gridSize.y];
+        screenSize = new Vector2Int(Screen.width, Screen.height);
         Recalculate();
     }
 
@@ -65,16 +68,17 @@ public class CanvasGrid {
         var cam = Camera.main!;
 
         worldUnitsInCamera.y = cam.orthographicSize * 2;
-        worldUnitsInCamera.x = worldUnitsInCamera.y * Screen.width / Screen.height;
+        worldUnitsInCamera.x = worldUnitsInCamera.y * screenSize.x / screenSize.y;
 
-        pixelToWorld.x = worldUnitsInCamera.x / Screen.width;
-        pixelToWorld.y = worldUnitsInCamera.y / Screen.height;
+        pixelToWorld.x = worldUnitsInCamera.x / screenSize.x;
+        pixelToWorld.y = worldUnitsInCamera.y / screenSize.y;
         
         var referenceResolution = new Vector2(1920, 1080);
         scaleFactor = Mathf.Min(screenSize.x / referenceResolution.x, screenSize.y / referenceResolution.y);
         var scaledMargins = new Vector2(margins.x * scaleFactor, margins.y * scaleFactor);
         var scaledCellSize = new Vector2(cellSize.x * scaleFactor, cellSize.y * scaleFactor);
         var scaledGap = gap * scaleFactor;
+        screenGap = scaledGap;
 
         var step = scaledCellSize + new Vector2(scaledGap, scaledGap);
         var full = scaledMargins * 2 + step * gridSize;

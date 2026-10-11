@@ -54,7 +54,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [MethodImpl(AggressiveInlining)] public static T Last<T>(this T[] array, T ifEmpty = default) {
-        return array.Length == 0 ? ifEmpty : array[^1];
+        return array == null || array.Length == 0 ? ifEmpty : array[^1];
     }
     
 #if ENABLE_IL2CPP
@@ -63,7 +63,7 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [MethodImpl(AggressiveInlining)] public static T Last<T>(this List<T> list, T ifEmpty = default) {
-        return list.Count == 0 ? ifEmpty : list[^1];
+        return list == null || list.Count == 0 ? ifEmpty : list[^1];
     }
 
 #if ENABLE_IL2CPP
@@ -363,7 +363,7 @@ public static class CollectionExtensions {
 #endif
     [MethodImpl(AggressiveInlining)] public static T Fold<T>(this T[] array, Func<T, T, T> func) {
         var acc = array.At(0);
-        for (var i = 0; i < array.Length; i++) {
+        for (var i = 1; i < array.Length; i++) {
             acc = func.Invoke(acc, array[i]);
         }
 
@@ -406,9 +406,9 @@ public static class CollectionExtensions {
             return ifEmpty;
         }
 
-        var minValue = float.MaxValue;
-        var idx = -1;
-        for (var i = 0; i < list.Count; i++) {
+        var minValue = func.Invoke(list[0]);
+        var idx = 0;
+        for (var i = 1; i < list.Count; i++) {
             var v = func.Invoke(list[i]);
             if (v <= minValue) {
                 minValue = v;
@@ -429,9 +429,9 @@ public static class CollectionExtensions {
             return ifEmpty;
         }
 
-        var minValue = float.MaxValue;
-        var idx = -1;
-        for (var i = 0; i < array.Length; i++) {
+        var minValue = func.Invoke(array[0]);
+        var idx = 0;
+        for (var i = 1; i < array.Length; i++) {
             var v = func.Invoke(array[i]);
             if (v <= minValue) {
                 minValue = v;
@@ -452,9 +452,9 @@ public static class CollectionExtensions {
             return ifEmpty;
         }
 
-        var maxValue = float.MinValue;
-        var idx = -1;
-        for (var i = 0; i < list.Count; i++) {
+        var maxValue = func.Invoke(list[0]);
+        var idx = 0;
+        for (var i = 1; i < list.Count; i++) {
             var v = func.Invoke(list[i]);
             if (v >= maxValue) {
                 maxValue = v;
@@ -475,9 +475,9 @@ public static class CollectionExtensions {
             return ifEmpty;
         }
 
-        var maxValue = float.MinValue;
-        var idx = -1;
-        for (var i = 0; i < array.Length; i++) {
+        var maxValue = func.Invoke(array[0]);
+        var idx = 0;
+        for (var i = 1; i < array.Length; i++) {
             var v = func.Invoke(array[i]);
             if (v >= maxValue) {
                 maxValue = v;
@@ -623,8 +623,9 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [MethodImpl(AggressiveInlining)] public static int IndexOf<T>(this T[] array, T item, int ifAbsent = -1) {
+        var comparer = EqualityComparer<T>.Default;
         for (var i = 0; i < array.Length; i++) {
-            if (array[i].Equals(item)) {
+            if (comparer.Equals(array[i], item)) {
                 return i;
             }
         }
@@ -652,8 +653,9 @@ public static class CollectionExtensions {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [MethodImpl(AggressiveInlining)] public static bool Contains<T>(this T[] array, T item) {
+        var comparer = EqualityComparer<T>.Default;
         for (var i = 0; i < array.Length; i++) {
-            if (Equals(array[i], item)) {
+            if (comparer.Equals(array[i], item)) {
                 return true;
             }
         }

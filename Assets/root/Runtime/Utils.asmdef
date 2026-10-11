@@ -1,12 +1,10 @@
 {
     "name": "Utils",
     "rootNamespace": "SharedUtils",
-    "references": [
-        "GUID:3377deebfb0acde45876d12c6e3d27cc"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

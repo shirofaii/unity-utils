@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using RandN;
-using RandN.Distributions;
-using Unity.PerformanceTesting;
 using UnityEngine;
 
 public class Test_RectData {
@@ -98,35 +95,5 @@ public class Test_RectData {
 
         rect.Clear();
         Assert.IsTrue(rect.IsEmpty());
-    }
-
-    [Test, Performance] public void RandomAccess() {
-        var rand = StandardRng.Create();
-        var s = Uniform.NewInclusive(0, 1023);
-        var list = new RectData<int>(new Vector2Int(1024, 1024));
-
-        Measure.Method(() => {
-            var r = new Vector2Int(s.Sample(rand), s.Sample(rand));
-            list[r]++;
-        })
-        .WarmupCount(5)
-        .IterationsPerMeasurement(10000)
-        .MeasurementCount(200)
-        .Run();
-    }
-
-    [Test, Performance] public void LocalAccess() {
-        var rand = StandardRng.Create();
-        var s = Uniform.NewInclusive(16, 32);
-        var list = new RectData<int>(new Vector2Int(1024, 1024));
-
-        Measure.Method(() => {
-                var r = new Vector2Int(s.Sample(rand), s.Sample(rand));
-                list[r]++;
-            })
-            .WarmupCount(5)
-            .IterationsPerMeasurement(10000)
-            .MeasurementCount(200)
-            .Run();
     }
 }

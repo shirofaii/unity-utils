@@ -61,7 +61,9 @@ public static class UnityObjectExtension {
         if ((list == null) || (list.Count == 0)) return;
 
         for (var i = 0; i < list.Count; i++) {
-            list[i].gameObject.SetActive(value);
+            if (list[i] != null) {
+                list[i].gameObject.SetActive(value);
+            }
         }
     }
 }

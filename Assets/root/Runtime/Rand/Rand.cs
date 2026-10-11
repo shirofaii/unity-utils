@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using static System.Runtime.CompilerServices.MethodImplOptions;
 
 // ReSharper disable InconsistentNaming
 
 namespace SharedUtils {
 public static class Rand {
-    [MethodImpl(AggressiveInlining)] public static int Index<T>(List<T> list) => RandomNumberGenerator.GetInt32(0, list.Count);
-    [MethodImpl(AggressiveInlining)] public static int Index<T>(RawList<T> list) => RandomNumberGenerator.GetInt32(0, list.size);
-    [MethodImpl(AggressiveInlining)] public static int Index<T>(T[] list) => RandomNumberGenerator.GetInt32(0, list.Length);
+    public static Pcg32 rng = new((ulong)DateTime.UtcNow.Ticks);
+    public static void Seed(ulong seed) => rng = new Pcg32(seed);
+
+    [MethodImpl(AggressiveInlining)] public static int Index<T>(List<T> list) => rng.Next(0, list.Count);
+    [MethodImpl(AggressiveInlining)] public static int Index<T>(RawList<T> list) => rng.Next(0, list.size);
+    [MethodImpl(AggressiveInlining)] public static int Index<T>(T[] list) => rng.Next(0, list.Length);
     
 #if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
@@ -42,7 +44,7 @@ public static class Rand {
         return list[Index(list)];
     }
     
-    [MethodImpl(AggressiveInlining)] public static float Float(float to) => UnityEngine.Random.Range(0f, to);
+    [MethodImpl(AggressiveInlining)] public static float Float(float to) => (float)(rng.NextDouble() * to);
 
     public struct Dice {
         public enum Keep { Sum, Best, Worst }
@@ -61,15 +63,17 @@ public static class Rand {
 
         public Dice best {
             [MethodImpl(AggressiveInlining)] get {
-                keep = Keep.Best;
-                return this;
+                var dice = this;
+                dice.keep = Keep.Best;
+                return dice;
             }
         }
 
         public Dice worst {
             [MethodImpl(AggressiveInlining)] get {
-                keep = Keep.Worst;
-                return this;
+                var dice = this;
+                dice.keep = Keep.Worst;
+                return dice;
             }
         }
 
@@ -85,9 +89,10 @@ public static class Rand {
             return dice;
         }
 
-        [MethodImpl(AggressiveInlining)] private int OneDiceRoll() => RandomNumberGenerator.GetInt32(1, sides + 1);
+        [MethodImpl(AggressiveInlining)] private int OneDiceRoll() => rng.Next(1, sides + 1);
         
         [MethodImpl(AggressiveInlining)] public int Roll() {
+            if (numberOfDices <= 0) return additive;
             switch (keep) {
                 case Keep.Worst: {
                     var min = OneDiceRoll();
@@ -143,11 +148,10 @@ public static class Rand {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [MethodImpl(AggressiveInlining)] public static RandomStartEnumeratorForListOf<T> FromRandomStart<T>(this List<T> list) {
-        var idx = Index(list);
         return new RandomStartEnumeratorForListOf<T> {
             data = list,
-            index = idx,
-            stopIndex = idx, 
+            index = list.Count == 0 ? -1 : Index(list) - 1,
+            remaining = list.Count,
         };
     }
     
@@ -159,14 +163,14 @@ public static class Rand {
     public struct RandomStartEnumeratorForListOf<T> {
         public List<T> data;
         public int index;
-        public int stopIndex;
-        
+        public int remaining;
+
         [MethodImpl(AggressiveInlining)] public RandomStartEnumeratorForListOf<T> GetEnumerator() => this;
         [MethodImpl(AggressiveInlining)] public bool MoveNext() {
+            if(remaining <= 0) return false;
+            remaining--;
             index++;
             if(index >= data.Count) index = 0;
-            if(index == stopIndex) return false;
-            
             return true;
         }
 
@@ -181,11 +185,10 @@ public static class Rand {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [MethodImpl(AggressiveInlining)] public static RandomStartEnumeratorForRawListOf<T> FromRandomStart<T>(this RawList<T> list) {
-        var idx = Index(list);
         return new RandomStartEnumeratorForRawListOf<T> {
             data = list,
-            index = idx,
-            stopIndex = idx, 
+            index = list.size == 0 ? -1 : Index(list) - 1,
+            remaining = list.size,
         };
     }
     
@@ -197,14 +200,14 @@ public static class Rand {
     public struct RandomStartEnumeratorForRawListOf<T> {
         public RawList<T> data;
         public int index;
-        public int stopIndex;
-        
+        public int remaining;
+
         [MethodImpl(AggressiveInlining)] public RandomStartEnumeratorForRawListOf<T> GetEnumerator() => this;
         [MethodImpl(AggressiveInlining)] public bool MoveNext() {
+            if(remaining <= 0) return false;
+            remaining--;
             index++;
             if(index >= data.size) index = 0;
-            if(index == stopIndex) return false;
-            
             return true;
         }
 
@@ -220,7 +223,7 @@ public static class Rand {
 #endif
     [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this T[] array) {
         for (var i = array.Length - 1; i > 0; i--) {
-            var j = RandomNumberGenerator.GetInt32(i + 1);
+            var j = rng.Next(i + 1);
             (array[i], array[j]) = (array[j], array[i]);
         }
     }
@@ -232,7 +235,7 @@ public static class Rand {
 #endif
     [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this List<T> list) {
         for (var i = list.Count - 1; i > 0; i--) {
-            var j = RandomNumberGenerator.GetInt32(i + 1);
+            var j = rng.Next(i + 1);
             (list[i], list[j]) = (list[j], list[i]);
         }
     }
@@ -244,9 +247,50 @@ public static class Rand {
 #endif
     [MethodImpl(AggressiveInlining)] public static void Shuffle<T>(this RawList<T> list) {
         for (var i = list.size - 1; i > 0; i--) {
-            var j = RandomNumberGenerator.GetInt32(i + 1);
+            var j = rng.Next(i + 1);
             (list[i], list[j]) = (list[j], list[i]);
         }
     }
+}
+
+[Serializable]
+public struct Pcg32 {
+    public ulong state;
+    public ulong inc;
+
+    public Pcg32(ulong seed, ulong stream = 0xda3e39cb94b95bdbUL) {
+        state = 0;
+        inc = (stream << 1) | 1;
+        NextUInt();
+        state += seed;
+        NextUInt();
+    }
+
+    [MethodImpl(AggressiveInlining)] public uint NextUInt() {
+        var old = state;
+        state = old * 6364136223846793005UL + inc;
+        var xorshifted = (uint)(((old >> 18) ^ old) >> 27);
+        var rot = (int)(old >> 59);
+        return (xorshifted >> rot) | (xorshifted << (-rot & 31));
+    }
+
+    public int Next(int bound) {
+        if(bound <= 0) throw new ArgumentOutOfRangeException(nameof(bound), bound, "must be positive");
+        var b = (uint)bound;
+        var m = (ulong)NextUInt() * b;
+        var low = (uint)m;
+        if(low < b) {
+            var threshold = (0u - b) % b;
+            while(low < threshold) {
+                m = (ulong)NextUInt() * b;
+                low = (uint)m;
+            }
+        }
+        return (int)(m >> 32);
+    }
+
+    [MethodImpl(AggressiveInlining)] public int Next(int min, int max) => min + Next(max - min);
+
+    [MethodImpl(AggressiveInlining)] public double NextDouble() => NextUInt() * (1.0 / 4294967296.0);
 }
 }

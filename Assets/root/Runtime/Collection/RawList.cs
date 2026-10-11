@@ -17,8 +17,6 @@ public sealed class RawList<T> {
     public int size;
     public int capacity;
 
-    public EqualityComparer<T> comparer;
-
     public ref T this[int index] {
         [MethodImpl(AggressiveInlining)] get {
             if(index < 0 || index >= size) throw new ArgumentOutOfRangeException(nameof(index));
@@ -31,25 +29,21 @@ public sealed class RawList<T> {
         capacity = 4;
         data = new T[capacity];
         size = 0;
-        comparer = EqualityComparer<T>.Default;
     }
 
     [MethodImpl(AggressiveInlining)] public RawList(int capacity) {
         this.capacity = HashHelpers.GetCapacitySmall(capacity) + 1;
         data = new T[this.capacity];
         size = 0;
-
-        comparer = EqualityComparer<T>.Default;
     }
-    
+
     [MethodImpl(AggressiveInlining)] public RawList(RawList<T> other) {
         capacity = other.capacity;
         data = new T[capacity];
         size = other.size;
-        comparer = other.comparer;
         Array.Copy(other.data, 0, data, 0, size);
     }
-    
+
     [MethodImpl(AggressiveInlining)] public Enumerator GetEnumerator() {
         Enumerator e;
 
@@ -59,11 +53,11 @@ public sealed class RawList<T> {
 
         return e;
     }
-    
+
     [MethodImpl(AggressiveInlining)] public void Grow(int newCapacity) {
         newCapacity = HashHelpers.GetCapacitySmall(newCapacity - 1) + 1;
         if(newCapacity <= capacity) return;
-        
+
         capacity = newCapacity;
         ArrayHelpers.Grow(ref data, capacity);
     }
@@ -83,7 +77,7 @@ public sealed class RawList<T> {
 
     [MethodImpl(AggressiveInlining)] public void AddRange(RawList<T> other) {
         if(other.size == 0) return;
-        
+
         var newSize = size + other.size;
 
         if (newSize > capacity) {
@@ -96,6 +90,7 @@ public sealed class RawList<T> {
     }
 
     [MethodImpl(AggressiveInlining)] public int IndexOf(T value) {
+        var comparer = EqualityComparer<T>.Default;
         for (var i = 0; i < size; i++) {
             if (comparer.Equals(value, data[i])) {
                 return i;
@@ -159,7 +154,7 @@ public sealed class RawList<T> {
         size--;
         return data[lastIndex];
     }
-    
+
     [MethodImpl(AggressiveInlining)] public void RemoveRange(int index, int count) {
         if (index < 0 || index >= size) throw new ArgumentOutOfRangeException(nameof(index));
         if (count < 0) throw new ArgumentOutOfRangeException(nameof(count), "Non-negative number required");
@@ -174,6 +169,7 @@ public sealed class RawList<T> {
         }
 
         size -= count;
+        Array.Clear(data, size, count);
     }
 
     [MethodImpl(AggressiveInlining)] public void Clear() {
@@ -203,7 +199,7 @@ public sealed class RawList<T> {
     [MethodImpl(AggressiveInlining)] public Span<T> AsSpan() {
         return data.AsSpan(0, size);
     }
-    
+
 #if ENABLE_IL2CPP
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -214,7 +210,7 @@ public sealed class RawList<T> {
         public int index;
         public int size;
 
-        
+
         [MethodImpl(AggressiveInlining)] public bool MoveNext() {
             return ++index < size;
         }

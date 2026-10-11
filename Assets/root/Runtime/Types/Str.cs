@@ -19,7 +19,7 @@ public readonly struct Str : IEquatable<Str> {
     
     [MethodImpl(AggressiveInlining)] public bool Equals(Str other) => ReferenceEquals(literalString, other.literalString);
     [MethodImpl(AggressiveInlining)] public override bool Equals(object obj) => obj is Str other && Equals(other);
-    [MethodImpl(AggressiveInlining)] public override int GetHashCode() => literalString.GetHashCode();
+    [MethodImpl(AggressiveInlining)] public override int GetHashCode() => literalString?.GetHashCode() ?? 0;
     [MethodImpl(AggressiveInlining)] public static bool operator ==(Str left, Str right) {
         return left.Equals(right);
     }
@@ -32,7 +32,7 @@ public readonly struct Str : IEquatable<Str> {
             return ReferenceEquals(x.literalString, y.literalString);
         }
         [MethodImpl(AggressiveInlining)] public int GetHashCode(Str obj) {
-            return obj.literalString.GetHashCode();
+            return obj.literalString?.GetHashCode() ?? 0;
         }
     }
     
