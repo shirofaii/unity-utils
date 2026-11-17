@@ -1,7 +1,9 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+#if ENABLE_IL2CPP
 using Unity.IL2CPP.CompilerServices;
+#endif
 using static System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace SharedUtils {

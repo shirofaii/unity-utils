@@ -2,15 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using UnityEngine;
 using static System.Runtime.CompilerServices.MethodImplOptions;
 
 public readonly struct Str : IEquatable<Str> {
     private readonly string literalString;
 
     [MethodImpl(AggressiveInlining)] public Str(string literalString) {
-        Debug.Assert(literalString != null);
-        Debug.Assert(string.IsInterned(literalString) != null);
+#if DEBUG
+        if (literalString == null) throw new ArgumentNullException(nameof(literalString));
+        if (string.IsInterned(literalString) == null) throw new ArgumentException("Str takes an interned string", nameof(literalString));
+#endif
         this.literalString = literalString;
     }
     

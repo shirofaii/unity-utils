@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+#if ENABLE_IL2CPP
+using Unity.IL2CPP.CompilerServices;
+#endif
 using static System.Runtime.CompilerServices.MethodImplOptions;
 
 // ReSharper disable InconsistentNaming

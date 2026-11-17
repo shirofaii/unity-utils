@@ -1,85 +1,88 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using UnityEngine;
 using static System.Runtime.CompilerServices.MethodImplOptions;
 
 [Serializable] public readonly struct RectData<T> {
-    public readonly Vector2Int size;
+    public readonly int width;
+    public readonly int height;
     public readonly T[] data;
 
-    public RectData(Vector2Int size) {
-        this.size = size;
-        data = new T[size.x * size.y];
+    public RectData(int width, int height) {
+        this.width = width;
+        this.height = height;
+        data = new T[width * height];
     }
 
-    public RectData(T[] src, Vector2Int size) {
-        this.size = size;
+    public RectData(T[] src, int width, int height) {
+        this.width = width;
+        this.height = height;
         data = src;
     }
 
+    public (int x, int y) size {
+        [MethodImpl(AggressiveInlining)] get => (width, height);
+    }
+
     public ref T this[int x, int y] {
-        [MethodImpl(AggressiveInlining)] get => ref data[x * size.y + y];
+        [MethodImpl(AggressiveInlining)] get => ref data[x * height + y];
     }
 
-    public ref T this[Vector2Int pos] {
-        [MethodImpl(AggressiveInlining)] get => ref data[pos.x * size.y + pos.y];
+    public void Fill(int x, int y, int w, int h, T value) {
+        var minX = Math.Max(x, 0);
+        var minY = Math.Max(y, 0);
+        var maxX = Math.Min(x + w, width);
+        var maxY = Math.Min(y + h, height);
+        if (maxY <= minY) return;
+        for (var column = minX; column < maxX; column++) Array.Fill(data, value, column * height + minY, maxY - minY);
     }
 
-    public T this[RectInt rect] {
-        set {
-            var min = Vector2Int.Max(rect.min, Vector2Int.zero);
-            var max = Vector2Int.Min(rect.max, size);
-            if (max.y <= min.y) return;
-            for (var x = min.x; x < max.x; x++) Array.Fill(data, value, x * size.y + min.y, max.y - min.y);
-        }
-    }
+    [MethodImpl(AggressiveInlining)] public bool Contains(int x, int y) => x >= 0 && y >= 0 && x < width && y < height;
 
-    [MethodImpl(AggressiveInlining)] public bool Contains(int x, int y) => x >= 0 && y >= 0 && x < size.x && y < size.y;
-    [MethodImpl(AggressiveInlining)] public bool Contains(Vector2Int pos) => Contains(pos.x, pos.y);
-
-    public bool IsNotEmpty(RectInt rect) {
-        foreach (ref readonly var x in DataInRect(rect)) {
-            if (!EqualityComparer<T>.Default.Equals(x, default)) return true;
+    public bool IsNotEmpty(int x, int y, int w, int h) {
+        foreach (ref readonly var cell in DataInRect(x, y, w, h)) {
+            if (!EqualityComparer<T>.Default.Equals(cell, default)) return true;
         }
 
         return false;
     }
-    [MethodImpl(AggressiveInlining)] public bool IsEmpty(RectInt rect) => !IsNotEmpty(rect);
-    [MethodImpl(AggressiveInlining)] public bool IsNotEmpty() => IsNotEmpty(area);
+    [MethodImpl(AggressiveInlining)] public bool IsEmpty(int x, int y, int w, int h) => !IsNotEmpty(x, y, w, h);
+    [MethodImpl(AggressiveInlining)] public bool IsNotEmpty() => IsNotEmpty(0, 0, width, height);
     [MethodImpl(AggressiveInlining)] public bool IsEmpty() => !IsNotEmpty();
 
     [MethodImpl(AggressiveInlining)] public void Clear() => Array.Clear(data, 0, data.Length);
 
-    public RectInt area {
-        [MethodImpl(AggressiveInlining)] get => new(0, 0, size.x, size.y);
-    }
+    [MethodImpl(AggressiveInlining)] public DataEnumerator GetEnumerator() => DataInRect(0, 0, width, height);
+    [MethodImpl(AggressiveInlining)] public IndexEnumerator WithIndexes() => IndexesInRect(0, 0, width, height);
 
-    [MethodImpl(AggressiveInlining)] public DataEnumerator GetEnumerator() => DataInRect(area);
-    [MethodImpl(AggressiveInlining)] public IndexEnumerator WithIndexes() => IndexesInRect(area);
-
-    [MethodImpl(AggressiveInlining)] public DataEnumerator DataInRect(RectInt rect) => new(this, rect);
-    [MethodImpl(AggressiveInlining)] public IndexEnumerator IndexesInRect(RectInt rect) => new(this, rect);
+    [MethodImpl(AggressiveInlining)] public DataEnumerator DataInRect(int x, int y, int w, int h) => new(this, x, y, w, h);
+    [MethodImpl(AggressiveInlining)] public IndexEnumerator IndexesInRect(int x, int y, int w, int h) => new(this, x, y, w, h);
 
     private struct RectCursor {
-        private readonly Vector2Int min;
-        private readonly Vector2Int max;
-        public Vector2Int current;
+        private readonly int minY;
+        private readonly int maxX;
+        private readonly int maxY;
+        public int x;
+        public int y;
 
-        [MethodImpl(AggressiveInlining)] public RectCursor(RectData<T> host, RectInt rect) {
-            min = Vector2Int.Max(rect.min, Vector2Int.zero);
-            max = Vector2Int.Min(rect.max, host.size);
-            current = max.x > min.x && max.y > min.y ? new Vector2Int(min.x, min.y - 1) : max;
+        [MethodImpl(AggressiveInlining)] public RectCursor(RectData<T> host, int x, int y, int w, int h) {
+            var minX = Math.Max(x, 0);
+            minY = Math.Max(y, 0);
+            maxX = Math.Min(x + w, host.width);
+            maxY = Math.Min(y + h, host.height);
+            var any = maxX > minX && maxY > minY;
+            this.x = any ? minX : maxX;
+            this.y = any ? minY - 1 : maxY;
         }
 
         [MethodImpl(AggressiveInlining)] public bool MoveNext() {
-            current.y++;
-            if (current.y < max.y) return true;
+            y++;
+            if (y < maxY) return true;
 
-            current.y = min.y;
-            current.x++;
+            y = minY;
+            x++;
 
-            return current.y < max.y && current.x < max.x;
+            return y < maxY && x < maxX;
         }
     }
 
@@ -87,8 +90,8 @@ using static System.Runtime.CompilerServices.MethodImplOptions;
         private RectCursor cursor;
         private readonly RectData<T> rectData;
 
-        [MethodImpl(AggressiveInlining)] public DataEnumerator(RectData<T> rectData, RectInt rect) {
-            cursor = new RectCursor(rectData, rect);
+        [MethodImpl(AggressiveInlining)] public DataEnumerator(RectData<T> rectData, int x, int y, int w, int h) {
+            cursor = new RectCursor(rectData, x, y, w, h);
             this.rectData = rectData;
         }
 
@@ -97,7 +100,7 @@ using static System.Runtime.CompilerServices.MethodImplOptions;
         [MethodImpl(AggressiveInlining)] public bool MoveNext() => cursor.MoveNext();
 
         public ref T Current {
-            [MethodImpl(AggressiveInlining)] get => ref rectData[cursor.current];
+            [MethodImpl(AggressiveInlining)] get => ref rectData[cursor.x, cursor.y];
         }
     }
 
@@ -105,8 +108,8 @@ using static System.Runtime.CompilerServices.MethodImplOptions;
         private RectCursor cursor;
         private readonly RectData<T> rectData;
 
-        [MethodImpl(AggressiveInlining)] public IndexEnumerator(RectData<T> rectData, RectInt rect) {
-            cursor = new RectCursor(rectData, rect);
+        [MethodImpl(AggressiveInlining)] public IndexEnumerator(RectData<T> rectData, int x, int y, int w, int h) {
+            cursor = new RectCursor(rectData, x, y, w, h);
             this.rectData = rectData;
         }
 
@@ -114,8 +117,8 @@ using static System.Runtime.CompilerServices.MethodImplOptions;
 
         [MethodImpl(AggressiveInlining)] public bool MoveNext() => cursor.MoveNext();
 
-        public (Vector2Int, T) Current {
-            [MethodImpl(AggressiveInlining)] get => (cursor.current, rectData[cursor.current]);
+        public ((int x, int y), T) Current {
+            [MethodImpl(AggressiveInlining)] get => ((cursor.x, cursor.y), rectData[cursor.x, cursor.y]);
         }
     }
 }
