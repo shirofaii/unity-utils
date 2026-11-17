@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Utils</AssemblyName>
+    <RootNamespace>SharedUtils</RootNamespace>
+    <LangVersion>14</LangVersion>
+    <IsPackable>false</IsPackable>
+    <Optimize>true</Optimize>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../Runtime/**/*.cs" LinkBase="Runtime" />
+  </ItemGroup>
+
+</Project>
